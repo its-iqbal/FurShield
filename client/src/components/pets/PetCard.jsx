@@ -2,6 +2,7 @@
  * components/pets/PetCard.jsx
  * Compact card shown in the pet tab strip and as the active detail view.
  */
+import { Link } from 'react-router-dom';
 
 export const SPECIES_META = {
   dog:     { emoji: '🐕', color: 'from-amber-500/20  border-amber-500/30'   },
@@ -156,13 +157,14 @@ export function PetDetailCard({ pet, onEdit, onDelete }) {
       {/* Quick actions bar */}
       <div className="grid grid-cols-3 gap-3 mt-6 pt-5 border-t border-white/10">
         {[
-          { icon: '📋', label: 'Health Records', id: `health-records-btn-${pet._id}` },
-          { icon: '🩺', label: 'Book Appointment', id: `book-appt-btn-${pet._id}` },
-          { icon: '📁', label: 'Documents', id: `documents-btn-${pet._id}` },
+          { icon: '📋', label: 'Health Records', id: `health-records-btn-${pet._id}`, to: '/dashboard/health-records' },
+          { icon: '🩺', label: 'Book Appointment', id: `book-appt-btn-${pet._id}`,  to: '/dashboard/appointments'   },
+          { icon: '📁', label: 'Documents',        id: `documents-btn-${pet._id}`,   to: '/dashboard/pets'           },
         ].map((action) => (
-          <button
+          <Link
             key={action.label}
             id={action.id}
+            to={action.to}
             className="flex flex-col items-center gap-2 p-3 rounded-xl border border-white/10
               bg-white/5 hover:bg-white/[0.08] hover:border-white/20 transition-all duration-200 group"
           >
@@ -170,7 +172,7 @@ export function PetDetailCard({ pet, onEdit, onDelete }) {
               {action.icon}
             </span>
             <span className="text-xs text-gray-400 text-center leading-tight">{action.label}</span>
-          </button>
+          </Link>
         ))}
       </div>
     </div>
