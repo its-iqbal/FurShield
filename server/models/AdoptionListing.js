@@ -58,6 +58,11 @@ const adoptionListingSchema = new Schema(
   }
 );
 
+adoptionListingSchema.virtual('name')
+  .get(function () { return this.petName; })
+  .set(function (v) { this.petName = v; });
+
+
 // ── Indexes ───────────────────────────────────────────────────────────────────
 adoptionListingSchema.index({ shelter: 1 });
 adoptionListingSchema.index({ status: 1 });

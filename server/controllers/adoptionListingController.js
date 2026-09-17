@@ -17,7 +17,8 @@ const ownListing = async (listingId, shelterId, next) => {
  * Shelter creates a new adoption listing.
  */
 export const createListing = asyncHandler(async (req, res) => {
-  const listing = await AdoptionListing.create({ ...req.body, shelter: req.user._id });
+  const petName = req.body.petName || req.body.name;
+  const listing = await AdoptionListing.create({ ...req.body, petName, shelter: req.user._id });
   sendResponse(res, 201, listing, 'Adoption listing created');
 });
 

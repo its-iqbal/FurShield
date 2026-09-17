@@ -45,6 +45,22 @@ const productSchema = new Schema(
   }
 );
 
+productSchema.virtual('stock')
+  .get(function () { return this.stockQuantity ?? 0; })
+  .set(function (v) { this.stockQuantity = v; });
+
+productSchema.virtual('discount')
+  .get(function () {
+    if (this.discountPrice && this.price && this.price > this.discountPrice) {
+      return Math.round(((this.price - this.discountPrice) / this.price) * 100);
+    }
+    return 0;
+  });
+
+productSchema.virtual('petType')
+  .get(function () { return this.petTypes?.[0] ?? 'all'; });
+
+
 // ── Indexes ───────────────────────────────────────────────────────────────────
 productSchema.index({ category: 1 });
 productSchema.index({ petTypes: 1 });
