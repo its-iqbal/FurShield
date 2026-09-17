@@ -28,11 +28,11 @@ const DEFAULT_FORM = {
 function Field({ label, required, error, children }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-gray-300">
+      <label className="text-sm font-medium text-body">
         {label} {required && <span className="text-primary-400">*</span>}
       </label>
       {children}
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && <p className="text-xs text-[#8C4238]">{error}</p>}
     </div>
   );
 }
@@ -44,8 +44,8 @@ function TextInput({ value, onChange, placeholder, type = 'text', ...props }) {
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className="w-full bg-gray-800/60 border border-white/10 rounded-xl px-4 py-2.5 text-white
-        placeholder-gray-600 text-sm focus:outline-none focus:border-primary-500/60
+      className="w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body
+        placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500
         focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
       {...props}
     />
@@ -59,8 +59,8 @@ function Textarea({ value, onChange, placeholder, rows = 3 }) {
       onChange={onChange}
       placeholder={placeholder}
       rows={rows}
-      className="w-full bg-gray-800/60 border border-white/10 rounded-xl px-4 py-2.5 text-white
-        placeholder-gray-600 text-sm focus:outline-none focus:border-primary-500/60
+      className="w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body
+        placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500
         focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 resize-none"
     />
   );
@@ -69,11 +69,11 @@ function Textarea({ value, onChange, placeholder, rows = 3 }) {
 function SectionTitle({ children }) {
   return (
     <div className="flex items-center gap-3 mb-4 mt-6 first:mt-0">
-      <div className="flex-1 h-px bg-white/10" />
-      <span className="text-xs font-semibold text-gray-500 uppercase tracking-widest whitespace-nowrap">
+      <div className="flex-1 h-px bg-[#E8E2D9]" />
+      <span className="text-xs font-semibold text-muted uppercase tracking-widest whitespace-nowrap">
         {children}
       </span>
-      <div className="flex-1 h-px bg-white/10" />
+      <div className="flex-1 h-px bg-[#E8E2D9]" />
     </div>
   );
 }
@@ -163,8 +163,8 @@ export default function PetForm({ initialData = null, onSubmit, onCancel, isLoad
               className={`flex flex-col items-center gap-1 p-3 rounded-xl border text-center
                 transition-all duration-200 hover:scale-105
                 ${form.species === s.value
-                  ? 'border-primary-500/70 bg-primary-500/20 text-white shadow-lg shadow-primary-500/10'
-                  : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20'
+                  ? 'border-primary-500/70 bg-primary-500/20 text-body shadow-warm-sm'
+                  : 'border-[#E8E2D9] bg-primary-50 text-muted hover:border-warm-md'
                 }`}
             >
               <span className="text-xl">{s.emoji}</span>
@@ -210,8 +210,8 @@ export default function PetForm({ initialData = null, onSubmit, onCancel, isLoad
               onClick={() => setForm((p) => ({ ...p, gender: g }))}
               className={`flex-1 py-2.5 rounded-xl text-sm font-medium border capitalize transition-all duration-200
                 ${form.gender === g
-                  ? 'border-primary-500/70 bg-primary-500/20 text-white'
-                  : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20'
+                  ? 'border-primary-500 bg-primary-100 text-primary-900 font-semibold shadow-sm'
+                  : 'border-[#E8E2D9] bg-primary-50 text-muted hover:border-warm-md hover:text-body'
                 }`}
             >
               {g === 'male' ? '♂ Male' : g === 'female' ? '♀ Female' : '— Unknown'}
@@ -229,14 +229,14 @@ export default function PetForm({ initialData = null, onSubmit, onCancel, isLoad
         </Field>
 
         <Field label="">
-          <label className="flex items-center gap-3 p-3 rounded-xl border border-white/10 bg-white/5 cursor-pointer hover:border-white/20 transition-all mt-6">
+          <label className="flex items-center gap-3 p-3 rounded-xl border border-[#E8E2D9] bg-primary-50 cursor-pointer hover:border-warm-md transition-all mt-6">
             <input
               type="checkbox"
               checked={form.isNeutered}
               onChange={set('isNeutered')}
               className="w-4 h-4 accent-primary-500"
             />
-            <span className="text-sm text-gray-300">Spayed / Neutered ✂️</span>
+            <span className="text-sm text-body">Spayed / Neutered ✂️</span>
           </label>
         </Field>
       </div>
@@ -248,7 +248,7 @@ export default function PetForm({ initialData = null, onSubmit, onCancel, isLoad
             onChange={set('allergies')}
             placeholder="e.g. pollen, chicken, dairy"
           />
-          <p className="text-xs text-gray-600 mt-1">Separate multiple allergies with commas.</p>
+          <p className="text-xs text-subtle mt-1">Separate multiple allergies with commas.</p>
         </Field>
       </div>
 
@@ -264,7 +264,7 @@ export default function PetForm({ initialData = null, onSubmit, onCancel, isLoad
       </div>
 
       {/* ── Actions ── */}
-      <div className="flex gap-3 pt-6 mt-2 border-t border-white/10">
+      <div className="flex gap-3 pt-6 mt-2 border-t border-[#E8E2D9]">
         <button
           type="button"
           onClick={onCancel}

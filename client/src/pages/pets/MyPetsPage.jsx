@@ -11,27 +11,27 @@ import { PetTab, PetDetailCard } from '../../components/pets/PetCard.jsx';
 
 function DashboardNavbar({ user, onLogout }) {
   return (
-    <header className="border-b border-white/5 px-6 py-4 flex items-center justify-between sticky top-0 z-30 bg-gray-950/95 backdrop-blur-md">
+    <header className="border-b border-[#E8E2D9] px-6 py-4 flex items-center justify-between sticky top-0 z-30 bg-page/95 backdrop-blur-md">
       <div className="flex items-center gap-6">
         <Link to="/" className="flex items-center gap-2">
           <span className="text-xl">🐾</span>
-          <span className="font-black gradient-text text-lg">FurShield</span>
+          <span className="font-semibold gradient-text text-lg">FurShield</span>
         </Link>
         {/* Breadcrumb */}
-        <div className="hidden md:flex items-center gap-2 text-sm text-gray-500">
-          <Link to="/dashboard" className="hover:text-gray-300 transition-colors">Dashboard</Link>
+        <div className="hidden md:flex items-center gap-2 text-sm text-muted">
+          <Link to="/dashboard" className="hover:text-body transition-colors">Dashboard</Link>
           <span>/</span>
-          <span className="text-gray-300">My Pets</span>
+          <span className="text-body">My Pets</span>
         </div>
       </div>
 
       <div className="flex items-center gap-4">
-        <span className="hidden sm:block text-sm text-gray-500">
-          Hi, <span className="text-gray-200">{user?.name?.split(' ')[0]}</span> 👋
+        <span className="hidden sm:block text-sm text-muted">
+          Hi, <span className="text-body">{user?.name?.split(' ')[0]}</span> 👋
         </span>
         <button
           onClick={onLogout}
-          className="text-xs text-gray-600 hover:text-red-400 transition-colors"
+          className="text-xs text-subtle hover:text-[#8C4238] transition-colors"
         >
           Sign out
         </button>
@@ -44,8 +44,8 @@ function EmptyPets({ onAdd }) {
   return (
     <div className="flex flex-col items-center justify-center py-24 text-center px-4 animate-fade-in">
       <div className="text-8xl mb-6 opacity-50">🐾</div>
-      <h2 className="text-2xl font-black text-white mb-2">No pets yet</h2>
-      <p className="text-gray-500 mb-8 max-w-sm">
+      <h2 className="text-2xl font-black text-body mb-2">No pets yet</h2>
+      <p className="text-muted mb-8 max-w-sm">
         Add your first furry (or not-so-furry) friend to start tracking their health, appointments, and more.
       </p>
       <button
@@ -66,12 +66,12 @@ function SkeletonCard() {
         <div className="w-20 h-20 rounded-2xl bg-white/10" />
         <div className="flex-1">
           <div className="h-7 bg-white/10 rounded-lg w-32 mb-2" />
-          <div className="h-4 bg-white/5 rounded w-24" />
+          <div className="h-4 bg-primary-50 rounded w-24" />
         </div>
       </div>
       <div className="grid grid-cols-4 gap-3">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className="h-14 bg-white/5 rounded-xl" />
+          <div key={i} className="h-14 bg-primary-50 rounded-xl" />
         ))}
       </div>
     </div>
@@ -80,7 +80,7 @@ function SkeletonCard() {
 
 function ErrorBanner({ message, onRetry }) {
   return (
-    <div className="flex items-center justify-between p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm mx-6 mt-4">
+    <div className="flex items-center justify-between p-4 rounded-xl bg-[#F4EBE8] border border-[#E0C8C4] text-[#8C4238] text-sm mx-6 mt-4">
       <span>⚠️ {message}</span>
       <button onClick={onRetry} className="text-xs underline ml-4 hover:no-underline">
         Retry
@@ -149,7 +149,7 @@ export default function MyPetsPage() {
   const openEdit = () => { setFormError(null); setShowEdit(true); };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-page text-body">
 
       {/* ── Navbar ── */}
       <DashboardNavbar user={user} onLogout={logout} />
@@ -163,8 +163,8 @@ export default function MyPetsPage() {
         {/* Page header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-black text-white">My Pets</h1>
-            <p className="text-gray-500 text-sm mt-1">
+            <h1 className="text-3xl font-heading font-semibold text-strong">My Pets</h1>
+            <p className="text-muted text-sm mt-1">
               {loading ? 'Loading…'
                 : pets.length === 0 ? 'No pets added yet'
                 : `${pets.length} pet${pets.length > 1 ? 's' : ''} registered`
@@ -187,7 +187,7 @@ export default function MyPetsPage() {
           <div className="space-y-4">
             <div className="flex gap-2 overflow-x-auto pb-2">
               {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-11 w-28 rounded-xl bg-white/5 animate-pulse flex-shrink-0" />
+                <div key={i} className="h-11 w-28 rounded-xl bg-primary-50 animate-pulse flex-shrink-0" />
               ))}
             </div>
             <SkeletonCard />
@@ -216,8 +216,8 @@ export default function MyPetsPage() {
               <button
                 onClick={openAdd}
                 id="add-another-pet-tab"
-                className="flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-white/20
-                  text-sm text-gray-500 hover:text-white hover:border-primary-500/50 hover:bg-primary-500/5
+                className="flex items-center gap-2 px-4 py-3 rounded-xl border border-dashed border-warm-md
+                  text-sm text-muted hover:text-body hover:border-primary-500/50 hover:bg-primary-500/5
                   transition-all duration-200 whitespace-nowrap flex-shrink-0"
               >
                 + Add Pet
@@ -248,8 +248,8 @@ export default function MyPetsPage() {
                   <div className="text-2xl mb-2 group-hover:scale-110 transition-transform duration-200">
                     {stat.icon}
                   </div>
-                  <p className="text-lg font-bold text-white">{stat.value}</p>
-                  <p className="text-xs text-gray-500">{stat.label}</p>
+                  <p className="text-lg font-bold text-strong">{stat.value}</p>
+                  <p className="text-xs text-muted">{stat.label}</p>
                 </Link>
               ))}
             </div>
@@ -265,7 +265,7 @@ export default function MyPetsPage() {
         size="lg"
       >
         {formError && (
-          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+          <div className="mb-4 p-3 rounded-xl bg-[#F4EBE8] border border-[#E0C8C4] text-[#8C4238] text-sm">
             ⚠️ {formError}
           </div>
         )}
@@ -284,7 +284,7 @@ export default function MyPetsPage() {
         size="lg"
       >
         {formError && (
-          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+          <div className="mb-4 p-3 rounded-xl bg-[#F4EBE8] border border-[#E0C8C4] text-[#8C4238] text-sm">
             ⚠️ {formError}
           </div>
         )}

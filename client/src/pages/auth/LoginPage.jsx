@@ -2,17 +2,14 @@ import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 
-// ── Small reusable UI atoms ───────────────────────────────────────────────────
-
+// ── Input field ───────────────────────────────────────────────────────────────
 function InputField({ id, label, type = 'text', value, onChange, placeholder, error, icon, rightElement }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium text-gray-300">
-        {label}
-      </label>
+      <label htmlFor={id} className="form-label">{label}</label>
       <div className="relative">
         {icon && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-lg pointer-events-none">
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#A8A39A] text-base pointer-events-none select-none">
             {icon}
           </span>
         )}
@@ -22,43 +19,19 @@ function InputField({ id, label, type = 'text', value, onChange, placeholder, er
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`w-full bg-gray-900/80 border rounded-xl px-4 py-3 text-white placeholder-gray-600
-            focus:outline-none focus:ring-2 transition-all duration-200
-            ${icon ? 'pl-10' : ''}
-            ${rightElement ? 'pr-12' : ''}
-            ${error
-              ? 'border-red-500/60 focus:ring-red-500/30'
-              : 'border-white/10 focus:border-primary-500/60 focus:ring-primary-500/20'
-            }`}
+          className={`form-input ${error ? 'form-input-error' : ''} ${icon ? 'pl-10' : ''} ${rightElement ? 'pr-12' : ''}`}
           autoComplete={type === 'password' ? 'current-password' : 'email'}
         />
         {rightElement && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2">{rightElement}</span>
+          <span className="absolute right-3.5 top-1/2 -translate-y-1/2">{rightElement}</span>
         )}
       </div>
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && <p className="form-error-text">{error}</p>}
     </div>
   );
 }
 
-function LoadingSpinner() {
-  return (
-    <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-  );
-}
-
-// ── Background orb decoration ─────────────────────────────────────────────────
-function BackgroundOrbs() {
-  return (
-    <div className="fixed inset-0 pointer-events-none overflow-hidden">
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl animate-pulse-slow" />
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-accent-500/15 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '2s' }} />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary-800/10 rounded-full blur-2xl" />
-    </div>
-  );
-}
-
-// ── Brand panel (left side on desktop) ───────────────────────────────────────
+// ── Brand panel (left, desktop) ───────────────────────────────────────────────
 function BrandPanel() {
   const features = [
     { icon: '🐾', text: 'Manage all your pets in one place' },
@@ -68,44 +41,51 @@ function BrandPanel() {
   ];
 
   return (
-    <div className="hidden lg:flex flex-col justify-between p-12 relative">
+    <div className="hidden lg:flex flex-col justify-between p-12 h-full relative bg-primary-50 border-r border-primary-200">
+      {/* Subtle corner radial */}
+      <div className="absolute bottom-0 right-0 w-80 h-80 pointer-events-none opacity-30"
+        style={{ background: 'radial-gradient(circle, #C9DCC9 0%, transparent 70%)', transform: 'translate(30%, 30%)' }} />
+
       {/* Brand */}
       <div className="flex items-center gap-3">
-        <span className="text-3xl">🐾</span>
-        <span className="text-2xl font-black gradient-text">FurShield</span>
+        <span className="text-3xl" aria-hidden="true">🐾</span>
+        <span className="font-['Fraunces'] text-2xl font-semibold text-primary-800">FurShield</span>
       </div>
 
       {/* Hero text */}
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-10 relative z-10">
         <div>
-          <h2 className="text-4xl font-black text-white leading-tight mb-4">
+          <h2 className="font-['Fraunces'] text-4xl font-semibold text-primary-900 leading-snug mb-4">
             Every Paw & Wing<br />
-            <span className="gradient-text">Deserves a Shield</span><br />
+            <span style={{
+              background: 'linear-gradient(135deg, #4F6B54 0%, #7FA087 60%)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text'
+            }}>Deserves a Shield</span><br />
             of Love
           </h2>
-          <p className="text-gray-400 text-lg leading-relaxed max-w-sm">
+          <p className="text-muted text-lg leading-relaxed max-w-sm font-light">
             Join thousands of pet owners, vets, and shelters on the platform built for better pet care.
           </p>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3.5">
           {features.map((f) => (
             <div key={f.text} className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-primary-500/20 flex items-center justify-center text-sm flex-shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-primary-200 flex items-center justify-center text-base flex-shrink-0">
                 {f.icon}
               </div>
-              <span className="text-gray-300 text-sm">{f.text}</span>
+              <span className="text-body text-sm">{f.text}</span>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      {/* Stats row */}
+      <div className="grid grid-cols-3 gap-3 relative z-10">
         {[['50K+', 'Pets Protected'], ['98%', 'Satisfaction'], ['24/7', 'Support']].map(([val, lbl]) => (
-          <div key={lbl} className="glass-card p-4 text-center">
-            <p className="text-xl font-black gradient-text">{val}</p>
-            <p className="text-xs text-gray-500 mt-1">{lbl}</p>
+          <div key={lbl} className="card-tint p-4 text-center">
+            <p className="font-['Fraunces'] text-xl font-semibold text-primary-700">{val}</p>
+            <p className="text-xs text-muted mt-0.5">{lbl}</p>
           </div>
         ))}
       </div>
@@ -116,16 +96,15 @@ function BrandPanel() {
 // ── Main Login Page ───────────────────────────────────────────────────────────
 export default function LoginPage() {
   const { login, isLoading, error, clearError } = useAuth();
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate   = useNavigate();
+  const location   = useLocation();
   const redirectTo = location.state?.from?.pathname || null;
 
-  const [form, setForm]           = useState({ email: '', password: '' });
-  const [showPassword, setShowPw] = useState(false);
-  const [fieldErrors, setFE]      = useState({});
+  const [form, setForm]             = useState({ email: '', password: '' });
+  const [showPassword, setShowPw]   = useState(false);
+  const [fieldErrors, setFE]        = useState({});
   const [submitting, setSubmitting] = useState(false);
 
-  // Clear context error when user starts typing
   useEffect(() => { if (error) clearError(); }, [form]);
 
   const validate = () => {
@@ -157,37 +136,34 @@ export default function LoginPage() {
   const busy = submitting || isLoading;
 
   return (
-    <div className="min-h-screen bg-gray-950 flex">
-      <BackgroundOrbs />
+    <div className="min-h-screen bg-page flex">
 
       {/* ── Left brand panel ── */}
-      <div className="lg:w-1/2 relative">
-        {/* Gradient divider on desktop */}
-        <div className="hidden lg:block absolute inset-y-0 right-0 w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+      <div className="lg:w-[52%] flex-shrink-0">
         <BrandPanel />
       </div>
 
       {/* ── Right form panel ── */}
-      <div className="flex-1 flex items-center justify-center px-6 py-12 relative z-10">
+      <div className="flex-1 flex items-center justify-center px-6 py-12 bg-page">
         <div className="w-full max-w-md animate-fade-in">
 
           {/* Mobile logo */}
-          <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <span className="text-2xl">🐾</span>
-            <span className="text-xl font-black gradient-text">FurShield</span>
+          <div className="flex items-center gap-2.5 mb-8 lg:hidden">
+            <span className="text-2xl" aria-hidden="true">🐾</span>
+            <span className="font-['Fraunces'] text-xl font-semibold text-primary-800">FurShield</span>
           </div>
 
-          {/* Card */}
-          <div className="glass-card p-8">
+          {/* Form card */}
+          <div className="card-surface p-8">
             <div className="mb-8">
-              <h1 className="text-3xl font-black text-white mb-2">Welcome back</h1>
-              <p className="text-gray-500">Sign in to your FurShield account</p>
+              <h1 className="font-['Fraunces'] text-3xl font-semibold text-primary-900 mb-1.5">Welcome back</h1>
+              <p className="text-muted text-sm">Sign in to your FurShield account</p>
             </div>
 
             {/* Global error */}
             {error && (
-              <div className="mb-6 flex items-start gap-3 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm animate-fade-in">
-                <span className="text-base mt-0.5">⚠️</span>
+              <div className="alert-error mb-6 animate-fade-in">
+                <span className="text-base mt-0.5 flex-shrink-0" aria-hidden="true">⚠</span>
                 <span>{error}</span>
               </div>
             )}
@@ -201,7 +177,7 @@ export default function LoginPage() {
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 placeholder="you@example.com"
                 error={fieldErrors.email}
-                icon="✉️"
+                icon="✉"
               />
 
               <InputField
@@ -217,10 +193,10 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPw(!showPassword)}
-                    className="text-gray-500 hover:text-gray-300 transition-colors text-sm"
+                    className="text-muted hover:text-body transition-colors text-sm"
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
-                    {showPassword ? '🙈' : '👁️'}
+                    {showPassword ? '🙈' : '👁'}
                   </button>
                 }
               />
@@ -229,32 +205,35 @@ export default function LoginPage() {
                 type="submit"
                 disabled={busy}
                 id="login-submit-btn"
-                className="btn-primary justify-center mt-1 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                className="btn-accent mt-1 w-full disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                {busy ? <><LoadingSpinner /><span>Signing in…</span></> : 'Sign In →'}
+                {busy
+                  ? <><span className="spinner w-4 h-4" /><span>Signing in…</span></>
+                  : 'Sign In →'
+                }
               </button>
             </form>
 
             {/* Divider */}
             <div className="flex items-center gap-4 my-6">
-              <div className="flex-1 h-px bg-white/10" />
-              <span className="text-gray-600 text-xs">New to FurShield?</span>
-              <div className="flex-1 h-px bg-white/10" />
+              <div className="divider flex-1" />
+              <span className="text-subtle text-xs">New to FurShield?</span>
+              <div className="divider flex-1" />
             </div>
 
             <Link
               to="/register"
               id="go-to-register-link"
-              className="btn-outline justify-center w-full text-center"
+              className="btn-outline w-full text-center"
             >
               Create an account
             </Link>
           </div>
 
-          <p className="text-center text-gray-700 text-xs mt-6">
+          <p className="text-center text-subtle text-xs mt-6">
             By signing in you agree to our{' '}
-            <a href="#" className="text-primary-500 hover:underline">Terms</a> &amp;{' '}
-            <a href="#" className="text-primary-500 hover:underline">Privacy Policy</a>
+            <a href="#" className="text-primary-600 hover:underline">Terms</a> &{' '}
+            <a href="#" className="text-primary-600 hover:underline">Privacy Policy</a>
           </p>
         </div>
       </div>

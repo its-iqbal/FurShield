@@ -12,18 +12,18 @@ import { VISIT_TYPES } from './healthConfig.js';
 function Field({ label, required, hint, error, children }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label className="text-sm font-medium text-gray-300">
+      <label className="text-sm font-medium text-body">
         {label} {required && <span className="text-primary-400">*</span>}
       </label>
       {children}
-      {hint  && <p className="text-xs text-gray-600">{hint}</p>}
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {hint  && <p className="text-xs text-subtle">{hint}</p>}
+      {error && <p className="text-xs text-[#8C4238]">{error}</p>}
     </div>
   );
 }
 
-const inputCls = `w-full bg-gray-800/60 border border-white/10 rounded-xl px-4 py-2.5 text-white
-  placeholder-gray-600 text-sm focus:outline-none focus:border-primary-500/60
+const inputCls = `w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body
+  placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500
   focus:ring-2 focus:ring-primary-500/20 transition-all duration-200`;
 
 function TextInput({ value, onChange, placeholder, type = 'text', ...rest }) {
@@ -37,11 +37,11 @@ function Textarea({ value, onChange, placeholder, rows = 3 }) {
 function SectionDivider({ icon, label }) {
   return (
     <div className="flex items-center gap-3 my-6">
-      <div className="flex-1 h-px bg-white/10" />
-      <span className="text-xs font-semibold text-gray-500 uppercase tracking-widest whitespace-nowrap">
+      <div className="flex-1 h-px bg-[#E8E2D9]" />
+      <span className="text-xs font-semibold text-muted uppercase tracking-widest whitespace-nowrap">
         {icon} {label}
       </span>
-      <div className="flex-1 h-px bg-white/10" />
+      <div className="flex-1 h-px bg-[#E8E2D9]" />
     </div>
   );
 }
@@ -67,7 +67,7 @@ function TagInput({ tags, onChange, placeholder }) {
               bg-amber-500/15 border border-amber-500/25 text-amber-300">
             {tag}
             <button type="button" onClick={() => removeTag(tag)}
-              className="hover:text-red-400 transition-colors leading-none">×</button>
+              className="hover:text-[#8C4238] transition-colors leading-none">×</button>
           </span>
         ))}
       </div>
@@ -81,12 +81,12 @@ function TagInput({ tags, onChange, placeholder }) {
           className={`${inputCls} flex-1`}
         />
         <button type="button" onClick={addTag}
-          className="px-3 py-2 rounded-xl border border-white/10 text-gray-400
+          className="px-3 py-2 rounded-xl border border-[#E8E2D9] text-muted
             hover:border-amber-500/40 hover:text-amber-300 text-sm transition-all">
           + Add
         </button>
       </div>
-      <p className="text-xs text-gray-600 mt-1">Press Enter or comma to add. Click tag × to remove.</p>
+      <p className="text-xs text-subtle mt-1">Press Enter or comma to add. Click tag × to remove.</p>
     </div>
   );
 }
@@ -106,7 +106,7 @@ function PrescriptionRows({ rows, onChange }) {
   return (
     <div className="flex flex-col gap-3">
       {rows.map((rx, i) => (
-        <div key={i} className="grid grid-cols-12 gap-2 p-3 bg-white/5 rounded-xl border border-white/10">
+        <div key={i} className="grid grid-cols-12 gap-2 p-3 bg-primary-50 rounded-xl border border-[#E8E2D9]">
           <div className="col-span-12 sm:col-span-4">
             <input value={rx.medicationName} onChange={(e) => update(i, 'medicationName', e.target.value)}
               placeholder="Medication name *" className={inputCls} />
@@ -125,8 +125,8 @@ function PrescriptionRows({ rows, onChange }) {
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <button type="button" onClick={() => removeRow(i)}
-              className="w-8 h-8 rounded-lg border border-white/10 text-gray-500
-                hover:border-red-500/40 hover:text-red-400 text-sm transition-all flex items-center justify-center">
+              className="w-8 h-8 rounded-lg border border-[#E8E2D9] text-muted
+                hover:border-red-500/40 hover:text-[#8C4238] text-sm transition-all flex items-center justify-center">
               ×
             </button>
           </div>
@@ -156,7 +156,7 @@ function VaccinationRows({ rows, onChange }) {
   return (
     <div className="flex flex-col gap-3">
       {rows.map((vax, i) => (
-        <div key={i} className="grid grid-cols-12 gap-2 p-3 bg-green-500/5 rounded-xl border border-green-500/20">
+        <div key={i} className="grid grid-cols-12 gap-2 p-3 bg-green-500/5 rounded-xl border border-primary-200">
           <div className="col-span-12 sm:col-span-4">
             <input value={vax.vaccineName} onChange={(e) => update(i, 'vaccineName', e.target.value)}
               placeholder="Vaccine name *" className={inputCls} />
@@ -175,15 +175,15 @@ function VaccinationRows({ rows, onChange }) {
           </div>
           <div className="col-span-1 flex items-center justify-center">
             <button type="button" onClick={() => removeRow(i)}
-              className="w-8 h-8 rounded-lg border border-white/10 text-gray-500
-                hover:border-red-500/40 hover:text-red-400 text-sm transition-all flex items-center justify-center">
+              className="w-8 h-8 rounded-lg border border-[#E8E2D9] text-muted
+                hover:border-red-500/40 hover:text-[#8C4238] text-sm transition-all flex items-center justify-center">
               ×
             </button>
           </div>
         </div>
       ))}
       <button type="button" onClick={addRow}
-        className="text-sm text-green-400 border border-dashed border-green-500/30
+        className="text-sm text-primary-600 border border-dashed border-green-500/30
           rounded-xl py-2.5 px-4 hover:bg-green-500/5 hover:border-green-500/50 transition-all">
         + Add Vaccination
       </button>
@@ -311,8 +311,8 @@ export default function HealthRecordForm({ initialData = null, onSubmit, onCance
               className={`flex flex-col items-center gap-1 p-3 rounded-xl border text-center
                 transition-all duration-200 hover:scale-105
                 ${form.visitType === t.value
-                  ? `${t.bg} ${t.border} text-white shadow-md`
-                  : 'border-white/10 bg-white/5 text-gray-400 hover:border-white/20'
+                  ? `${t.bg} ${t.border} text-body shadow-md`
+                  : 'border-[#E8E2D9] bg-primary-50 text-muted hover:border-warm-md'
                 }`}>
               <span className="text-xl">{t.emoji}</span>
               <span className="text-xs font-medium leading-tight">{t.label}</span>
@@ -359,7 +359,7 @@ export default function HealthRecordForm({ initialData = null, onSubmit, onCance
 
       {/* ── Prescriptions ── */}
       <SectionDivider icon="💊" label="Prescriptions" />
-      <div className="text-xs text-gray-600 mb-3">
+      <div className="text-xs text-subtle mb-3">
         Columns: Medication Name · Dosage · Duration · Notes
       </div>
       <PrescriptionRows
@@ -369,7 +369,7 @@ export default function HealthRecordForm({ initialData = null, onSubmit, onCance
 
       {/* ── Vaccinations ── */}
       <SectionDivider icon="💉" label="Vaccinations" />
-      <div className="text-xs text-gray-600 mb-3">
+      <div className="text-xs text-subtle mb-3">
         Columns: Vaccine Name · Date Given · Next Due · Batch #
       </div>
       <VaccinationRows
@@ -427,7 +427,7 @@ export default function HealthRecordForm({ initialData = null, onSubmit, onCance
       </div>
 
       {/* ── Actions ── */}
-      <div className="flex gap-3 pt-6 mt-4 border-t border-white/10">
+      <div className="flex gap-3 pt-6 mt-4 border-t border-[#E8E2D9]">
         <button type="button" onClick={onCancel} className="btn-outline flex-shrink-0 px-5 py-2.5 text-sm">
           Cancel
         </button>

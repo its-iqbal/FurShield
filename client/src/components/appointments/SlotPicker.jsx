@@ -1,4 +1,4 @@
-/**
+﻿/**
  * components/appointments/SlotPicker.jsx
  * Date strip (next 14 days) + time slot grid.
  * Generates 30-min intervals from the vet's availableSlots for the selected day,
@@ -53,10 +53,10 @@ function DateButton({ date, isSelected, onClick, isToday }) {
       className={`flex flex-col items-center px-3 py-2.5 rounded-xl border flex-shrink-0 min-w-[3.5rem]
         transition-all duration-200 hover:scale-105
         ${isSelected
-          ? 'bg-primary-500 border-primary-400 text-white shadow-lg shadow-primary-500/20'
+          ? 'bg-primary-500 border-primary-400 text-body shadow-lg shadow-primary-500/20'
           : isToday
           ? 'bg-primary-500/10 border-primary-500/40 text-primary-300'
-          : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/25 hover:text-gray-200'
+          : 'bg-primary-50 border-[#E8E2D9] text-muted hover:border-white/25 hover:text-body'
         }`}
     >
       <span className="text-xs font-medium">{day}</span>
@@ -98,7 +98,7 @@ export default function SlotPicker({ selectedDate, selectedTime, onDateChange, o
   return (
     <div>
       {/* ── Date strip ── */}
-      <p className="text-sm font-medium text-gray-300 mb-3">📅 Select Date</p>
+      <p className="text-sm font-medium text-body mb-3">📅 Select Date</p>
       <div className="flex gap-2 overflow-x-auto pb-2 mb-6 scrollbar-thin">
         {dateStrip.map((date) => {
           const iso       = date.toISOString().slice(0, 10);
@@ -118,17 +118,17 @@ export default function SlotPicker({ selectedDate, selectedTime, onDateChange, o
       {/* ── Time slot grid ── */}
       {selectedDate && (
         <>
-          <p className="text-sm font-medium text-gray-300 mb-3">
+          <p className="text-sm font-medium text-body mb-3">
             🕐 Select Time
             {vet?.availableSlots?.length > 0 && (
-              <span className="ml-2 text-xs text-green-400/80">
+              <span className="ml-2 text-xs text-primary-600/80">
                 (Based on Dr. {vet.name?.split(' ')[0]}'s schedule)
               </span>
             )}
           </p>
 
           {timeSlots.length === 0 ? (
-            <div className="text-center py-8 text-gray-600 text-sm bg-white/5 rounded-xl border border-white/10">
+            <div className="text-center py-8 text-subtle text-sm bg-primary-50 rounded-xl border border-[#E8E2D9]">
               <p className="text-2xl mb-2">📵</p>
               <p>No slots available on this day for Dr. {vet?.name ?? 'this vet'}.</p>
               <p className="text-xs mt-1">Please select a different date.</p>
@@ -143,8 +143,8 @@ export default function SlotPicker({ selectedDate, selectedTime, onDateChange, o
                   onClick={() => onTimeChange(slot)}
                   className={`py-2.5 rounded-xl border text-sm font-medium transition-all duration-200 hover:scale-105
                     ${selectedTime === slot
-                      ? 'bg-primary-500 border-primary-400 text-white shadow-md shadow-primary-500/20'
-                      : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/25 hover:text-gray-200'
+                      ? 'bg-primary-500 border-primary-400 text-body shadow-md shadow-primary-500/20'
+                      : 'bg-primary-50 border-[#E8E2D9] text-muted hover:border-white/25 hover:text-body'
                     }`}
                 >
                   {format12h(slot)}
@@ -156,7 +156,7 @@ export default function SlotPicker({ selectedDate, selectedTime, onDateChange, o
       )}
 
       {!selectedDate && (
-        <div className="text-center py-8 text-gray-600 text-sm bg-white/5 rounded-xl border border-white/10">
+        <div className="text-center py-8 text-subtle text-sm bg-primary-50 rounded-xl border border-[#E8E2D9]">
           <p className="text-3xl mb-2">📅</p>
           <p>Select a date above to see available time slots.</p>
         </div>

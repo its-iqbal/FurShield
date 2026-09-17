@@ -21,7 +21,10 @@ const vetCanAccessPet = async (vetId, petId) => {
  * - Owners: for their own pets (e.g. manually logging a past visit)
  */
 export const createRecord = asyncHandler(async (req, res, next) => {
-  const { petId, ...rest } = req.body;
+  const petId = req.body.petId || req.body.pet;
+  if (!petId) return next(new AppError('petId is required.', 400));
+
+  const { petId: _p, pet: _pet, ...rest } = req.body;
 
   const pet = await Pet.findById(petId);
   if (!pet) return next(new AppError('Pet not found.', 404));
@@ -53,6 +56,38 @@ export const createRecord = asyncHandler(async (req, res, next) => {
   });
 
   sendResponse(res, 201, record, 'Health record created');
+});
+
+/**
+ * GET /api/v1/health-records
+ * Returns records filtered by pet query (?pet=... or ?petId=...) or all records for user's pets.
+ */
+export const getAllRecords = asyncHandler(async (req, res, next) => {
+  const petId = req.query.pet || req.query.petId;
+  if (petId) {
+    req.params.petId = petId;
+    return getRecordsByPet(req, res, next);
+  }
+
+  if (req.user.role === 'petOwner') {
+    const myPets = await Pet.find({ owner: req.user._id }).select('_id');
+    const petIds = myPets.map(p => p._id);
+    const records = await HealthRecord.find({ pet: { $in: petIds } })
+      .populate('vet', 'name specialization clinicName')
+      .populate('pet', 'name species breed')
+      .sort({ visitDate: -1 });
+    return sendResponse(res, 200, records, 'Health records retrieved');
+  }
+
+  if (req.user.role === 'veterinarian') {
+    const records = await HealthRecord.find({ vet: req.user._id })
+      .populate('pet', 'name species breed')
+      .populate('owner', 'name email')
+      .sort({ visitDate: -1 });
+    return sendResponse(res, 200, records, 'Health records retrieved');
+  }
+
+  sendResponse(res, 200, [], 'Health records retrieved');
 });
 
 /**
@@ -107,14 +142,17 @@ export const getRecordById = asyncHandler(async (req, res, next) => {
 
 /**
  * PATCH /api/v1/health-records/:id
- * Update a health record. Only the vet who created it can update it.
+ * Update a health record. Treating vet or creator owner can update it.
  */
 export const updateRecord = asyncHandler(async (req, res, next) => {
   const record = await HealthRecord.findById(req.params.id);
   if (!record) return next(new AppError('Record not found.', 404));
 
-  if (req.user.role !== 'veterinarian' || String(record.vet) !== String(req.user._id)) {
-    return next(new AppError('Only the treating veterinarian can update this record.', 403));
+  const isOwner = req.user.role === 'petOwner' && String(record.owner) === String(req.user._id) && record.addedBy === 'owner';
+  const isVet   = req.user.role === 'veterinarian' && String(record.vet) === String(req.user._id);
+
+  if (!isOwner && !isVet) {
+    return next(new AppError('Only the creator or treating veterinarian can update this record.', 403));
   }
 
   const forbidden = ['pet', 'owner', 'vet', 'addedBy'];

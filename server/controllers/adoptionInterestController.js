@@ -72,6 +72,28 @@ export const getMyInterests = asyncHandler(async (req, res) => {
 });
 
 /**
+ * GET /api/v1/adoption-interests/shelter
+ * Shelter views all interest forms submitted for any of their listings.
+ */
+export const getShelterInterests = asyncHandler(async (req, res) => {
+  const interests = await AdoptionInterest.find({ shelter: req.user._id })
+    .populate('applicant', 'name email phone address')
+    .populate('listing', 'petName species breed images status')
+    .sort({ createdAt: -1 });
+
+  const mapped = interests.map((i) => {
+    const obj = i.toObject({ virtuals: true });
+    if (!obj.owner && obj.applicant) obj.owner = obj.applicant;
+    if (obj.listing && !obj.listing.name && obj.listing.petName) {
+      obj.listing.name = obj.listing.petName;
+    }
+    return obj;
+  });
+
+  sendResponse(res, 200, mapped, 'Shelter adoption interests retrieved');
+});
+
+/**
  * PATCH /api/v1/adoption-interests/:id/respond
  * Shelter responds to a specific interest form: approve or reject.
  * Body: { status: 'approved' | 'rejected', shelterResponse }

@@ -6,6 +6,9 @@ const router = Router();
 
 router.use(protect);
 
+// Query records (by ?pet=... or all)
+router.get('/', hr.getAllRecords);
+
 // Create: owner or vet (access controlled inside controller)
 router.post('/', hr.createRecord);
 
@@ -15,7 +18,7 @@ router.get('/pet/:petId', hr.getRecordsByPet);
 // Single record
 router.route('/:id')
   .get(hr.getRecordById)
-  .patch(restrictTo('veterinarian'), hr.updateRecord)
+  .patch(hr.updateRecord)
   .delete(hr.deleteRecord);
 
 export default router;

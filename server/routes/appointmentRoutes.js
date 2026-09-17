@@ -13,6 +13,7 @@ router.get('/suggest-vets', appt.suggestVets);
 router.post('/', restrictTo('petOwner'), appt.createAppointment);
 
 // View own appointments (owner sees theirs, vet sees theirs)
+router.get('/',   appt.getMyAppointments);
 router.get('/my', appt.getMyAppointments);
 
 // Single appointment

@@ -1,46 +1,312 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Work+Sans:wght@300;400;500;600;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* ── Design Tokens ────────────────────────────────────────────────────────────
+   All colors reference DESIGN.md tokens. Never use Tailwind's gray/slate/zinc
+   defaults for structural surfaces. Never use pure white or pure black.
+   ──────────────────────────────────────────────────────────────────────────── */
+
 @layer base {
-  * {
+  *, *::before, *::after {
     box-sizing: border-box;
   }
 
   html {
     scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Base: warm off-white background, warm charcoal text — NEVER pure white/black */
   body {
-    @apply bg-gray-950 text-gray-100 font-sans antialiased;
-    min-height: 100vh;
+    background-color: #FBF7F0;
+    color: #33302B;
+    font-family: 'Work Sans', system-ui, sans-serif;
+    min-height: 100dvh;
+    line-height: 1.6;
+  }
+
+  /* Fraunces for every heading level */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    color: #2C3D2F;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  /* Consistent focus ring — primary-500 tinted, never harsh blue */
+  :focus-visible {
+    outline: 2px solid #7FA087;
+    outline-offset: 2px;
+  }
+
+  /* Scrollbar — warm-tinted, subtle */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #F1F5F1; }
+  ::-webkit-scrollbar-thumb { background: #C9DCC9; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #8FB391; }
+
+  /* Link base */
+  a { color: inherit; text-decoration: none; }
+}
+
+/* ── Component Library ────────────────────────────────────────────────────────
+   All component classes reference design-system tokens only. No ad-hoc colors.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+@layer components {
+
+  /* ── Buttons ─────────────────────────────────────────────────────────────── */
+
+  /* Primary: sage green — standard actions (Save, Submit, Confirm) */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2
+           px-6 py-3 rounded-2xl font-semibold text-[15px]
+           bg-primary-500 text-white
+           hover:bg-primary-600 active:bg-primary-700
+           transition-colors duration-150
+           shadow-[0_2px_8px_rgba(51,48,43,0.12)]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#FBF7F0];
+  }
+
+  /* Accent CTA: warm terracotta — reserved for THE single most important action per screen */
+  .btn-accent {
+    @apply inline-flex items-center justify-center gap-2
+           px-6 py-3 rounded-2xl font-semibold text-[15px]
+           bg-accent-500 text-white
+           hover:bg-accent-600 active:bg-accent-700
+           transition-colors duration-150
+           shadow-[0_2px_8px_rgba(51,48,43,0.12)]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500 focus-visible:ring-offset-2;
+  }
+
+  /* Outline: bordered, transparent fill — secondary actions */
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2
+           px-6 py-3 rounded-2xl font-semibold text-[15px]
+           border-2 border-primary-500 text-primary-700
+           hover:bg-primary-50 hover:border-primary-600
+           active:bg-primary-100
+           transition-colors duration-150
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2;
+  }
+
+  /* Ghost: no border, no fill — tertiary / destructive links */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2
+           px-4 py-2 rounded-xl font-medium text-sm
+           text-primary-700 hover:bg-primary-50
+           transition-colors duration-150;
+  }
+
+  /* Danger ghost — sign out / delete */
+  .btn-danger-ghost {
+    @apply inline-flex items-center justify-center gap-2
+           px-4 py-2 rounded-xl font-medium text-sm
+           text-[#8C4238] hover:bg-[#F4EBE8]
+           transition-colors duration-150;
+  }
+
+  /* ── Cards ───────────────────────────────────────────────────────────────── */
+
+  /* Base card: warm bg-base with warm shadow — no glass/blur effects */
+  .card {
+    @apply bg-[#FBF7F0] rounded-2xl border border-[#E8E2D9]
+           shadow-[0_2px_12px_rgba(51,48,43,0.07)];
+  }
+
+  /* Surface card: slightly elevated — modals, selected states */
+  .card-surface {
+    @apply bg-white rounded-2xl border border-[#E8E2D9]
+           shadow-[0_4px_16px_rgba(51,48,43,0.09)];
+  }
+
+  /* Tint card: primary-50 bg — info panels, feature highlights */
+  .card-tint {
+    @apply bg-primary-50 rounded-2xl border border-primary-200
+           shadow-[0_2px_8px_rgba(51,48,43,0.06)];
+  }
+
+  /* Deprecated glass-card → maps to card for backward compat */
+  .glass-card {
+    @apply bg-[#FBF7F0] rounded-2xl border border-[#E8E2D9]
+           shadow-[0_2px_12px_rgba(51,48,43,0.07)]
+           transition-shadow duration-200
+           hover:shadow-[0_4px_16px_rgba(51,48,43,0.11)];
+  }
+
+  /* ── Forms ───────────────────────────────────────────────────────────────── */
+
+  .form-input {
+    @apply w-full bg-white border border-[#D9D4CC] rounded-2xl
+           px-4 py-3 text-base-text text-[15px]
+           placeholder-[#A8A39A]
+           focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500
+           transition-all duration-150;
+  }
+
+  .form-input-error {
+    @apply border-[#B87A74] focus:ring-[#B87A74]/30 focus:border-[#B87A74];
+  }
+
+  .form-label {
+    @apply block text-sm font-medium text-[#4F4A44] mb-1.5;
+  }
+
+  .form-error-text {
+    @apply text-xs text-[#8C4238] mt-1;
+  }
+
+  .form-hint-text {
+    @apply text-xs text-[#8A8279] mt-1;
+  }
+
+  /* ── Badges & Alerts ─────────────────────────────────────────────────────── */
+
+  /* Status badges — desaturated semantic colors per DESIGN.md */
+  .badge-success {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xl text-xs font-medium
+           bg-primary-50 text-primary-700 border border-primary-200;
+  }
+
+  .badge-warning {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xl text-xs font-medium
+           bg-[#F5EDD9] text-[#7A5E2A] border border-[#E3D0A8];
+  }
+
+  .badge-error {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xl text-xs font-medium
+           bg-[#F4EBE8] text-[#8C4238] border border-[#E0C8C4];
+  }
+
+  .badge-info {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xl text-xs font-medium
+           bg-[#E8F0F5] text-[#3D6278] border border-[#B8CDD9];
+  }
+
+  .badge-neutral {
+    @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xl text-xs font-medium
+           bg-[#EEEAE4] text-[#6B6560] border border-[#D9D4CC];
+  }
+
+  /* Alert boxes */
+  .alert-error {
+    @apply flex items-start gap-3 p-4 rounded-2xl
+           bg-[#F4EBE8] border border-[#E0C8C4] text-[#8C4238] text-sm;
+  }
+
+  .alert-success {
+    @apply flex items-start gap-3 p-4 rounded-2xl
+           bg-primary-50 border border-primary-200 text-primary-700 text-sm;
+  }
+
+  .alert-info {
+    @apply flex items-start gap-3 p-4 rounded-2xl
+           bg-[#E8F0F5] border border-[#B8CDD9] text-[#3D6278] text-sm;
+  }
+
+  /* ── Sidebar / Layout ────────────────────────────────────────────────────── */
+
+  .sidebar {
+    @apply bg-[#F1F5F1] border-r border-[#D9E5D9];
+  }
+
+  .sidebar-nav-item {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium
+           text-[#4F4A44] hover:bg-primary-100 hover:text-primary-800
+           transition-colors duration-150;
+  }
+
+  .sidebar-nav-item-active {
+    @apply bg-primary-200 text-primary-900 font-semibold;
+  }
+
+  .topbar {
+    @apply bg-[#F1F5F1]/90 backdrop-blur-sm border-b border-[#D9E5D9];
+  }
+
+  /* ── Typography helpers ──────────────────────────────────────────────────── */
+
+  /* Heading with Fraunces */
+  .heading-serif {
+    font-family: 'Fraunces', serif;
+    color: #2C3D2F;
+    font-weight: 600;
+  }
+
+  /* Warm display gradient — Fraunces only, primary-700 to primary-500 */
+  .heading-gradient {
+    font-family: 'Fraunces', serif;
+    background: linear-gradient(135deg, #4F6B54 0%, #7FA087 60%, #9BA187 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Deprecated gradient-text → warm version */
+  .gradient-text {
+    font-family: 'Fraunces', serif;
+    background: linear-gradient(135deg, #4F6B54 0%, #7FA087 60%, #9BA187 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Section divider — warm, not harsh white/black */
+  .divider {
+    @apply h-px bg-[#E8E2D9];
+  }
+
+  /* ── Loading ─────────────────────────────────────────────────────────────── */
+
+  .spinner {
+    @apply w-5 h-5 border-2 border-primary-200 border-t-primary-600
+           rounded-full animate-spin;
+  }
+
+  /* ── Stat pill ───────────────────────────────────────────────────────────── */
+  .stat-pill {
+    @apply flex flex-col items-center justify-center p-4 rounded-2xl
+           bg-white border border-[#E8E2D9]
+           shadow-[0_2px_8px_rgba(51,48,43,0.06)];
   }
 }
 
-@layer components {
-  .btn-primary {
-    @apply inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-white
-           bg-gradient-to-r from-primary-500 to-accent-500
-           hover:from-primary-600 hover:to-accent-600
-           transition-all duration-200 shadow-lg hover:shadow-primary-500/30
-           hover:-translate-y-0.5 active:translate-y-0;
-  }
+/* ── Utilities ────────────────────────────────────────────────────────────────
+   Supplement Tailwind with design-system-specific utilities.
+   ──────────────────────────────────────────────────────────────────────────── */
 
-  .btn-outline {
-    @apply inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold
-           border border-primary-500/50 text-primary-400
-           hover:bg-primary-500/10 hover:border-primary-400
-           transition-all duration-200 hover:-translate-y-0.5;
-  }
+@layer utilities {
+  /* Warm page background */
+  .bg-page { background-color: #FBF7F0; }
 
-  .glass-card {
-    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl
-           hover:bg-white/[0.08] hover:border-white/20 transition-all duration-300;
-  }
+  /* Warm surface (pure white when needed above bg-page) */
+  .bg-surface { background-color: #FFFFFF; }
 
-  .gradient-text {
-    @apply bg-gradient-to-r from-primary-400 via-accent-400 to-primary-300 bg-clip-text text-transparent;
-  }
+  /* Sidebar / panel background */
+  .bg-panel { background-color: #F1F5F1; }
+
+  /* Text tokens */
+  .text-strong  { color: #2C3D2F; }
+  .text-body    { color: #33302B; }
+  .text-muted   { color: #6B6560; }
+  .text-subtle  { color: #A8A39A; }
+  .text-primary-label { color: #4F6B54; }
+
+  /* Warm shadow utilities — tinted toward text-base */
+  .shadow-warm-sm  { box-shadow: 0 1px 4px rgba(51,48,43,0.08); }
+  .shadow-warm     { box-shadow: 0 2px 12px rgba(51,48,43,0.10); }
+  .shadow-warm-md  { box-shadow: 0 4px 20px rgba(51,48,43,0.12); }
+  .shadow-warm-lg  { box-shadow: 0 8px 32px rgba(51,48,43,0.13); }
+
+  /* Border tokens */
+  .border-warm     { border-color: #E8E2D9; }
+  .border-warm-md  { border-color: #D9D4CC; }
+  .border-primary-light { border-color: #C9DCC9; }
+
+  /* No decorative animations per DESIGN.md — utility to enforce */
+  .no-animate { animation: none !important; }
 }

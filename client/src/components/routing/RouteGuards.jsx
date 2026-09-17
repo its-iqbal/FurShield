@@ -1,4 +1,4 @@
-import { Navigate, useLocation } from 'react-router-dom';
+﻿import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 
 /**
@@ -24,10 +24,10 @@ export function ProtectedRoute({ roles }) {
   // While rehydrating auth from localStorage, show nothing (avoids flash)
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 rounded-full border-4 border-primary-500 border-t-transparent animate-spin" />
-          <p className="text-gray-500 text-sm">Loading FurShield…</p>
+          <p className="text-muted text-sm">Loading FurShield…</p>
         </div>
       </div>
     );
@@ -54,7 +54,7 @@ export function PublicRoute() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="w-12 h-12 rounded-full border-4 border-primary-500 border-t-transparent animate-spin" />
       </div>
     );

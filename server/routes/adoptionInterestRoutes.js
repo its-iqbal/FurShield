@@ -12,10 +12,14 @@ router.post('/:listingId', interest.submitInterest);
 // Applicant views their own forms
 router.get('/my', interest.getMyInterests);
 
+// Shelter views all forms across their listings
+router.get('/shelter', restrictTo('shelter'), interest.getShelterInterests);
+
 // Shelter views forms for a specific listing
 router.get('/listing/:listingId', restrictTo('shelter'), interest.getInterestsByListing);
 
 // Shelter responds (approve/reject)
 router.patch('/:id/respond', restrictTo('shelter'), interest.respondToInterest);
+router.patch('/:id',         restrictTo('shelter'), interest.respondToInterest);
 
 export default router;

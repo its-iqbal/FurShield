@@ -17,14 +17,14 @@ function VetCard({ vet, isSelected, onSelect }) {
       onClick={() => onSelect(vet)}
       className={`w-full text-left p-4 rounded-2xl border transition-all duration-200 hover:scale-[1.01] group
         ${isSelected
-          ? 'bg-primary-500/15 border-primary-500/50 shadow-lg shadow-primary-500/10'
-          : 'bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20'
+          ? 'bg-primary-500/15 border-primary-500/50 shadow-warm-sm'
+          : 'bg-primary-50 border-[#E8E2D9] hover:bg-white/[0.08] hover:border-warm-md'
         }`}
     >
       <div className="flex items-start gap-3">
         {/* Avatar */}
-        <div className="w-12 h-12 rounded-xl bg-gray-800 flex items-center justify-center text-2xl
-          border border-white/10 flex-shrink-0 group-hover:scale-105 transition-transform">
+        <div className="w-12 h-12 rounded-xl [#EEEAE4] flex items-center justify-center text-2xl
+          border border-[#E8E2D9] flex-shrink-0 group-hover:scale-105 transition-transform">
           {vet.avatar ? (
             <img src={vet.avatar} alt={vet.name} className="w-full h-full object-cover rounded-xl" />
           ) : '🩺'}
@@ -33,9 +33,9 @@ function VetCard({ vet, isSelected, onSelect }) {
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div>
-              <p className="text-white font-bold text-sm">Dr. {vet.name}</p>
+              <p className="text-strong font-bold text-sm">{vet.name?.startsWith('Dr.') ? vet.name : `Dr. ${vet.name}`}</p>
               {vet.specialization && (
-                <p className="text-primary-400 text-xs mt-0.5">{vet.specialization}</p>
+                <p className="text-primary-700 text-xs mt-0.5">{vet.specialization}</p>
               )}
             </div>
             {isSelected && (
@@ -46,12 +46,12 @@ function VetCard({ vet, isSelected, onSelect }) {
           </div>
 
           {vet.clinicName && (
-            <p className="text-gray-500 text-xs mt-1.5 flex items-center gap-1">
+            <p className="text-muted text-xs mt-1.5 flex items-center gap-1">
               🏥 {vet.clinicName}
             </p>
           )}
           {vet.address?.city && (
-            <p className="text-gray-600 text-xs flex items-center gap-1">
+            <p className="text-subtle text-xs flex items-center gap-1">
               📍 {vet.address.city}
               {vet.address?.state && `, ${vet.address.state}`}
             </p>
@@ -59,18 +59,18 @@ function VetCard({ vet, isSelected, onSelect }) {
 
           <div className="flex items-center gap-3 mt-2 flex-wrap">
             {vet.experience && (
-              <span className="text-xs text-gray-500 bg-white/5 px-2 py-0.5 rounded-md">
+              <span className="text-xs text-muted bg-primary-50 px-2 py-0.5 rounded-md">
                 {vet.experience} yrs exp
               </span>
             )}
             {vet.phone && (
-              <span className="text-xs text-gray-500">📞 {vet.phone}</span>
+              <span className="text-xs text-muted">📞 {vet.phone}</span>
             )}
           </div>
 
           {/* Available days strip */}
           {days && (
-            <p className="text-xs text-green-400/80 mt-2">📅 {days}</p>
+            <p className="text-xs text-primary-600/80 mt-2">📅 {days}</p>
           )}
         </div>
       </div>
@@ -81,12 +81,12 @@ function VetCard({ vet, isSelected, onSelect }) {
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 function VetSkeleton() {
   return (
-    <div className="flex gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 animate-pulse">
+    <div className="flex gap-3 p-4 rounded-2xl bg-primary-50 border border-[#E8E2D9] animate-pulse">
       <div className="w-12 h-12 rounded-xl bg-white/10 flex-shrink-0" />
       <div className="flex-1 space-y-2">
         <div className="h-4 w-32 bg-white/10 rounded" />
-        <div className="h-3 w-24 bg-white/5 rounded" />
-        <div className="h-3 w-40 bg-white/5 rounded" />
+        <div className="h-3 w-24 bg-primary-50 rounded" />
+        <div className="h-3 w-40 bg-primary-50 rounded" />
       </div>
     </div>
   );
@@ -132,28 +132,28 @@ export default function VetSearchPanel({ selectedVet, onSelectVet }) {
       {/* Search controls */}
       <div className="flex flex-col sm:flex-row gap-3 mb-5">
         <div className="relative flex-1">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">🔍</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none">🔍</span>
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by name, specialization, condition…"
             id="vet-search-input"
-            className="w-full pl-9 pr-4 py-2.5 bg-gray-800/60 border border-white/10 rounded-xl text-white
-              placeholder-gray-600 text-sm focus:outline-none focus:border-primary-500/60
+            className="w-full pl-9 pr-4 py-2.5 bg-white border border-[#E8E2D9] rounded-xl text-body
+              placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500
               focus:ring-2 focus:ring-primary-500/20 transition-all"
           />
         </div>
         <div className="relative sm:w-44">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">📍</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none">📍</span>
           <input
             type="text"
             value={city}
             onChange={(e) => setCity(e.target.value)}
             placeholder="City"
             id="vet-city-filter"
-            className="w-full pl-9 pr-4 py-2.5 bg-gray-800/60 border border-white/10 rounded-xl text-white
-              placeholder-gray-600 text-sm focus:outline-none focus:border-primary-500/60
+            className="w-full pl-9 pr-4 py-2.5 bg-white border border-[#E8E2D9] rounded-xl text-body
+              placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500
               focus:ring-2 focus:ring-primary-500/20 transition-all"
           />
         </div>
@@ -161,18 +161,18 @@ export default function VetSearchPanel({ selectedVet, onSelectVet }) {
 
       {/* Selected vet banner */}
       {selectedVet && (
-        <div className="flex items-center gap-3 p-3 mb-4 rounded-xl bg-primary-500/10 border border-primary-500/30">
+        <div className="flex items-center gap-3 p-3 mb-4 rounded-xl bg-primary-50 border border-primary-200">
           <span className="text-xl">✅</span>
           <div className="flex-1 min-w-0">
-            <p className="text-white text-sm font-semibold">Dr. {selectedVet.name}</p>
+            <p className="text-strong text-sm font-semibold">{selectedVet.name?.startsWith('Dr.') ? selectedVet.name : `Dr. ${selectedVet.name}`}</p>
             {selectedVet.specialization && (
-              <p className="text-primary-400 text-xs">{selectedVet.specialization}</p>
+              <p className="text-primary-700 text-xs">{selectedVet.specialization}</p>
             )}
           </div>
           <button
             type="button"
             onClick={() => onSelectVet(null)}
-            className="text-xs text-gray-500 hover:text-red-400 transition-colors"
+            className="text-xs text-muted hover:text-[#8C4238] transition-colors"
           >
             Change
           </button>
@@ -184,10 +184,10 @@ export default function VetSearchPanel({ selectedVet, onSelectVet }) {
         {loading && [...Array(3)].map((_, i) => <VetSkeleton key={i} />)}
 
         {!loading && searched && vets.length === 0 && (
-          <div className="text-center py-10 text-gray-500 text-sm">
+          <div className="text-center py-10 text-muted text-sm">
             <p className="text-3xl mb-3">🩺</p>
             <p>No veterinarians found.</p>
-            <p className="text-xs mt-1 text-gray-600">Try a different search or clear the city filter.</p>
+            <p className="text-xs mt-1 text-subtle">Try a different search or clear the city filter.</p>
           </div>
         )}
 

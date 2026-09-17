@@ -74,7 +74,8 @@ export const updateCartItem = asyncHandler(async (req, res, next) => {
   const cart = await Order.findOne({ owner: req.user._id, status: 'cart' });
   if (!cart) return next(new AppError('No active cart found.', 404));
 
-  const item = cart.items.id(req.params.itemId);
+  const targetId = req.params.itemId || req.params.id;
+  const item = cart.items.id(targetId);
   if (!item) return next(new AppError('Cart item not found.', 404));
 
   if (Number(quantity) <= 0) {
@@ -88,19 +89,33 @@ export const updateCartItem = asyncHandler(async (req, res, next) => {
 });
 
 /**
- * DELETE /api/v1/orders/cart/items/:itemId
+ * DELETE /api/v1/orders/cart/items/:itemId (or /api/v1/orders/cart/:id)
  * Remove a specific item from the cart.
  */
 export const removeFromCart = asyncHandler(async (req, res, next) => {
   const cart = await Order.findOne({ owner: req.user._id, status: 'cart' });
   if (!cart) return next(new AppError('No active cart found.', 404));
 
-  const item = cart.items.id(req.params.itemId);
+  const targetId = req.params.itemId || req.params.id;
+  const item = cart.items.id(targetId);
   if (!item) return next(new AppError('Cart item not found.', 404));
 
   item.deleteOne();
   await cart.save();
   sendResponse(res, 200, cart, 'Item removed from cart');
+});
+
+/**
+ * DELETE /api/v1/orders/cart
+ * Clears all items from the current user's active cart.
+ */
+export const clearCart = asyncHandler(async (req, res) => {
+  const cart = await Order.findOne({ owner: req.user._id, status: 'cart' });
+  if (cart) {
+    cart.items = [];
+    await cart.save();
+  }
+  sendResponse(res, 200, cart, 'Cart cleared');
 });
 
 /**

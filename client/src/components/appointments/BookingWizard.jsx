@@ -29,18 +29,18 @@ function StepIndicator({ step, total }) {
                 transition-all duration-300
                 ${done    ? 'bg-primary-500 text-white'
                 : current ? 'bg-primary-500/20 border-2 border-primary-500 text-primary-400'
-                :           'bg-white/5 border border-white/10 text-gray-600'
+                :           'bg-primary-50 border border-[#E8E2D9] text-subtle'
                 }`}>
                 {done ? '✓' : n}
               </div>
               <span className={`text-xs whitespace-nowrap transition-colors duration-300
-                ${current ? 'text-primary-400 font-medium' : done ? 'text-gray-500' : 'text-gray-700'}`}>
+                ${current ? 'text-primary-400 font-medium' : done ? 'text-muted' : 'text-gray-700'}`}>
                 {label}
               </span>
             </div>
             {i < labels.length - 1 && (
               <div className={`flex-1 h-px mb-5 transition-all duration-500
-                ${done ? 'bg-primary-500' : 'bg-white/10'}`} />
+                ${done ? 'bg-primary-500' : 'bg-[#E8E2D9]'}`} />
             )}
           </div>
         );
@@ -52,38 +52,37 @@ function StepIndicator({ step, total }) {
 // ── Step 1: Pet selection ─────────────────────────────────────────────────────
 function StepPet({ pets, selectedPet, onSelect, onNext }) {
   return (
-    <div className="animate-fade-in">
-      <h2 className="text-xl font-black text-white mb-1">Which pet is this for?</h2>
-      <p className="text-gray-500 text-sm mb-6">Select the pet you're booking the appointment for.</p>
+    <div>
+      <p className="text-muted text-sm mb-4">Who is this appointment for?</p>
 
-      <div className="flex flex-col gap-3 mb-8">
+      <div className="space-y-3 mb-6">
         {pets.map((pet) => (
           <button
             key={pet._id}
             type="button"
-            id={`book-for-pet-${pet._id}`}
+            id={`wizard-pet-${pet._id}`}
             onClick={() => onSelect(pet)}
-            className={`flex items-center gap-4 p-4 rounded-2xl border text-left
-              transition-all duration-200 hover:scale-[1.01] group
+            className={`w-full flex items-center gap-4 p-4 rounded-xl border text-left
+              transition-all duration-200
               ${selectedPet?._id === pet._id
-                ? 'bg-primary-500/15 border-primary-500/50 shadow-lg shadow-primary-500/10'
-                : 'bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20'
+                ? 'border-primary-500/60 bg-primary-500/15 shadow-sm'
+                : 'bg-primary-50 border-[#E8E2D9] hover:bg-white/[0.08] hover:border-warm-md'
               }`}
           >
-            <div className="w-12 h-12 rounded-xl bg-gray-800 flex items-center justify-center text-2xl border border-white/10 flex-shrink-0">
+            <div className="w-12 h-12 rounded-xl [#EEEAE4] flex items-center justify-center text-2xl border border-[#E8E2D9] flex-shrink-0">
               {SPECIES_EMOJI[pet.species] ?? '🐾'}
             </div>
             <div className="flex-1">
-              <p className="text-white font-bold">{pet.name}</p>
-              <p className="text-gray-500 text-xs capitalize">
+              <p className="text-strong font-bold">{pet.name}</p>
+              <p className="text-muted text-xs capitalize">
                 {pet.species}{pet.breed ? ` · ${pet.breed}` : ''}{pet.age ? ` · ${pet.age}yr` : ''}
               </p>
               {pet.allergies?.length > 0 && (
-                <p className="text-red-400/80 text-xs mt-1">⚠️ {pet.allergies.join(', ')}</p>
+                <p className="text-[#8C4238]/80 text-xs mt-1">⚠️ {pet.allergies.join(', ')}</p>
               )}
             </div>
             {selectedPet?._id === pet._id && (
-              <span className="w-5 h-5 rounded-full bg-primary-500 flex items-center justify-center text-white text-xs flex-shrink-0">✓</span>
+              <span className="w-5 h-5 rounded-full bg-primary-500 flex items-center justify-center text-body text-xs flex-shrink-0">✓</span>
             )}
           </button>
         ))}
@@ -106,8 +105,8 @@ function StepPet({ pets, selectedPet, onSelect, onNext }) {
 function StepVet({ selectedVet, onSelect, onBack, onNext }) {
   return (
     <div className="animate-fade-in">
-      <h2 className="text-xl font-black text-white mb-1">Choose a Veterinarian</h2>
-      <p className="text-gray-500 text-sm mb-5">Search by name, specialization, or condition treated.</p>
+      <h2 className="text-xl font-black text-body mb-1">Choose a Veterinarian</h2>
+      <p className="text-muted text-sm mb-5">Search by name, specialization, or condition treated.</p>
 
       <VetSearchPanel selectedVet={selectedVet} onSelectVet={onSelect} />
 
@@ -131,8 +130,8 @@ function StepVet({ selectedVet, onSelect, onBack, onNext }) {
 function StepSchedule({ selectedDate, selectedTime, onDateChange, onTimeChange, selectedVet, onBack, onNext }) {
   return (
     <div className="animate-fade-in">
-      <h2 className="text-xl font-black text-white mb-1">Pick a Date & Time</h2>
-      <p className="text-gray-500 text-sm mb-5">
+      <h2 className="text-xl font-black text-body mb-1">Pick a Date & Time</h2>
+      <p className="text-muted text-sm mb-5">
         Choose from Dr. {selectedVet?.name}'s available slots.
       </p>
 
@@ -174,18 +173,18 @@ function StepDetails({ form, onChange, selectedPet, selectedVet, selectedDate, s
 
   return (
     <div className="animate-fade-in">
-      <h2 className="text-xl font-black text-white mb-1">Confirm Appointment</h2>
-      <p className="text-gray-500 text-sm mb-5">Add a reason and review your booking details.</p>
+      <h2 className="text-xl font-black text-body mb-1">Confirm Appointment</h2>
+      <p className="text-muted text-sm mb-5">Add a reason and review your booking details.</p>
 
       {apiError && (
-        <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-start gap-2">
+        <div className="mb-4 p-3 rounded-xl bg-[#F4EBE8] border border-[#E0C8C4] text-[#8C4238] text-sm flex items-start gap-2">
           <span>⚠️</span><span>{apiError}</span>
         </div>
       )}
 
       {/* Summary card */}
       <div className="glass-card p-4 mb-5 space-y-3">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Booking Summary</p>
+        <p className="text-xs font-semibold text-muted uppercase tracking-wider mb-3">Booking Summary</p>
         {[
           { icon: '🐾', label: 'Pet',       value: `${selectedPet?.name} · ${selectedPet?.species ?? ''}` },
           { icon: '🩺', label: 'Vet',       value: `Dr. ${selectedVet?.name} (${selectedVet?.specialization ?? 'General'})` },
@@ -196,8 +195,8 @@ function StepDetails({ form, onChange, selectedPet, selectedVet, selectedDate, s
           <div key={row.label} className="flex items-start gap-3">
             <span className="text-lg flex-shrink-0 mt-0.5">{row.icon}</span>
             <div>
-              <p className="text-xs text-gray-600">{row.label}</p>
-              <p className="text-sm text-white font-medium capitalize">{row.value}</p>
+              <p className="text-xs text-subtle">{row.label}</p>
+              <p className="text-sm text-body font-medium capitalize">{row.value}</p>
             </div>
           </div>
         ))}
@@ -205,7 +204,7 @@ function StepDetails({ form, onChange, selectedPet, selectedVet, selectedDate, s
 
       {/* Reason */}
       <div className="mb-4">
-        <label className="text-sm font-medium text-gray-300 mb-1.5 block">
+        <label className="text-sm font-medium text-body mb-1.5 block">
           Reason for Visit <span className="text-primary-400">*</span>
         </label>
         <input
@@ -214,16 +213,16 @@ function StepDetails({ form, onChange, selectedPet, selectedVet, selectedDate, s
           value={form.reason}
           onChange={(e) => onChange('reason', e.target.value)}
           placeholder="e.g. Limping, Annual check-up, Skin irritation, Vaccination"
-          className="w-full bg-gray-800/60 border border-white/10 rounded-xl px-4 py-2.5 text-white
-            placeholder-gray-600 text-sm focus:outline-none focus:border-primary-500/60
+          className="w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body
+            placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500
             focus:ring-2 focus:ring-primary-500/20 transition-all"
         />
       </div>
 
       {/* Notes */}
       <div className="mb-6">
-        <label className="text-sm font-medium text-gray-300 mb-1.5 block">
-          Additional Notes <span className="text-gray-600 text-xs font-normal">(optional)</span>
+        <label className="text-sm font-medium text-body mb-1.5 block">
+          Additional Notes <span className="text-subtle text-xs font-normal">(optional)</span>
         </label>
         <textarea
           id="appt-notes"
@@ -231,8 +230,8 @@ function StepDetails({ form, onChange, selectedPet, selectedVet, selectedDate, s
           onChange={(e) => onChange('notes', e.target.value)}
           rows={3}
           placeholder="Any additional context for the vet — symptoms, medications, recent changes…"
-          className="w-full bg-gray-800/60 border border-white/10 rounded-xl px-4 py-2.5 text-white
-            placeholder-gray-600 text-sm focus:outline-none focus:border-primary-500/60
+          className="w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body
+            placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500
             focus:ring-2 focus:ring-primary-500/20 transition-all resize-none"
         />
       </div>
@@ -269,18 +268,18 @@ function StepSuccess({ selectedPet, selectedVet, selectedDate, selectedTime }) {
 
   return (
     <div className="animate-fade-in text-center py-4">
-      <div className="text-6xl mb-5 animate-bounce">🎉</div>
-      <h2 className="text-2xl font-black text-white mb-2">Appointment Booked!</h2>
-      <p className="text-gray-400 text-sm mb-1">
-        Your appointment for <span className="text-white font-semibold">{selectedPet?.name}</span> with{' '}
-        <span className="text-primary-400 font-semibold">Dr. {selectedVet?.name}</span> is confirmed.
+      <div className="text-6xl mb-5 ">🎉</div>
+      <h2 className="text-2xl font-black text-body mb-2">Appointment Booked!</h2>
+      <p className="text-muted text-sm mb-1">
+        Your appointment for <span className="text-strong font-semibold">{selectedPet?.name}</span> with{' '}
+        <span className="text-primary-600 font-semibold">Dr. {selectedVet?.name}</span> is confirmed.
       </p>
       <div className="glass-card p-4 mt-5 text-left space-y-2">
-        <p className="text-sm text-gray-300">📅 {dateLabel} · {format12h(selectedTime)}</p>
-        {selectedVet?.clinicName && <p className="text-sm text-gray-400">🏥 {selectedVet.clinicName}</p>}
-        {selectedVet?.phone && <p className="text-sm text-gray-400">📞 {selectedVet.phone}</p>}
+        <p className="text-sm text-body">📅 {dateLabel} · {format12h(selectedTime)}</p>
+        {selectedVet?.clinicName && <p className="text-sm text-muted">🏥 {selectedVet.clinicName}</p>}
+        {selectedVet?.phone && <p className="text-sm text-muted">📞 {selectedVet.phone}</p>}
       </div>
-      <p className="text-xs text-gray-600 mt-4">The vet will confirm your appointment shortly.</p>
+      <p className="text-xs text-subtle mt-4">The vet will confirm your appointment shortly.</p>
     </div>
   );
 }

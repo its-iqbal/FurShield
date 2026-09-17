@@ -3,14 +3,14 @@ import DashboardLayout from '../../components/layout/DashboardLayout.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import UserService from '../../api/userService.js';
 
-const inputCls = `w-full bg-gray-800/60 border border-white/10 rounded-xl px-4 py-2.5 text-white
-  placeholder-gray-600 text-sm focus:outline-none focus:border-primary-500/60
+const inputCls = `w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body
+  placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500/60
   focus:ring-2 focus:ring-primary-500/20 transition-all`;
 
 function Field({ label, required, children }) {
   return (
     <div>
-      <label className="text-sm font-medium text-gray-300 block mb-1.5">
+      <label className="text-sm font-medium text-body block mb-1.5">
         {label} {required && <span className="text-primary-400">*</span>}
       </label>
       {children}
@@ -21,7 +21,7 @@ function Field({ label, required, children }) {
 function SectionCard({ title, icon, children }) {
   return (
     <div className="glass-card p-6">
-      <h3 className="text-lg font-bold text-white mb-5 flex items-center gap-2">
+      <h3 className="text-lg font-bold text-body mb-5 flex items-center gap-2">
         <span>{icon}</span> {title}
       </h3>
       {children}
@@ -117,7 +117,7 @@ export default function ProfilePage() {
 
   const MsgBanner = ({ msg }) => msg ? (
     <div className={`p-3 rounded-xl text-sm flex items-center gap-2 mt-4
-      ${msg.type === 'success' ? 'bg-green-500/10 border border-green-500/20 text-green-400' : 'bg-red-500/10 border border-red-500/20 text-red-400'}`}>
+      ${msg.type === 'success' ? 'bg-primary-50 border border-primary-200 text-primary-600' : 'bg-[#F4EBE8] border border-[#E0C8C4] text-[#8C4238]'}`}>
       <span>{msg.type === 'success' ? '✅' : '⚠️'}</span> {msg.text}
     </div>
   ) : null;
@@ -141,8 +141,8 @@ export default function ProfilePage() {
             {user?.avatar ? <img src={user.avatar} alt="" className="w-full h-full object-cover rounded-2xl" /> : '👤'}
           </div>
           <div>
-            <h2 className="text-2xl font-black text-white">{user?.name}</h2>
-            <p className="text-gray-500 text-sm">{user?.email}</p>
+            <h2 className="text-2xl font-heading font-semibold text-strong">{user?.name}</h2>
+            <p className="text-muted text-sm">{user?.email}</p>
             <span className="inline-block mt-2 text-xs px-3 py-1 rounded-full bg-primary-500/10 text-primary-400 border border-primary-500/20">
               {roleLabel}
             </span>
@@ -169,8 +169,8 @@ export default function ProfilePage() {
             </Field>
 
             {/* Address */}
-            <div className="pt-4 border-t border-white/10">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4">Address</p>
+            <div className="pt-4 border-t border-[#E8E2D9]">
+              <p className="text-xs font-semibold text-muted uppercase tracking-widest mb-4">Address</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
                   <Field label="Street"><input value={form.street} onChange={set('street')} placeholder="Street / Apartment" className={inputCls} /></Field>
@@ -184,8 +184,8 @@ export default function ProfilePage() {
 
             {/* Vet fields */}
             {user?.role === 'veterinarian' && (
-              <div className="pt-4 border-t border-white/10">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4">Veterinarian Details</p>
+              <div className="pt-4 border-t border-[#E8E2D9]">
+                <p className="text-xs font-semibold text-muted uppercase tracking-widest mb-4">Veterinarian Details</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field label="Specialization"><input value={form.specialization} onChange={set('specialization')} placeholder="e.g. Small Animal Surgery" className={inputCls} /></Field>
                   <Field label="Years of Experience"><input type="number" value={form.experience} onChange={set('experience')} placeholder="e.g. 8" className={inputCls} /></Field>
@@ -197,8 +197,8 @@ export default function ProfilePage() {
 
             {/* Shelter fields */}
             {user?.role === 'shelter' && (
-              <div className="pt-4 border-t border-white/10">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-4">Shelter Details</p>
+              <div className="pt-4 border-t border-[#E8E2D9]">
+                <p className="text-xs font-semibold text-muted uppercase tracking-widest mb-4">Shelter Details</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Field label="Shelter Name"><input value={form.shelterName} onChange={set('shelterName')} placeholder="Official shelter name" className={inputCls} /></Field>
                   <Field label="License Number"><input value={form.shelterLicense} onChange={set('shelterLicense')} placeholder="Shelter license / reg. number" className={inputCls} /></Field>

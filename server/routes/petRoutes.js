@@ -16,6 +16,7 @@ router.route('/')
 router.route('/:id')
   .get(pet.getPetById)                              // petOwner + vet (guarded inside)
   .patch(restrictTo('petOwner'), pet.updatePet)
+  .put(restrictTo('petOwner'), pet.updatePet)
   .delete(restrictTo('petOwner'), pet.deletePet);
 
 router.post('/:id/images',    restrictTo('petOwner'), pet.addImages);

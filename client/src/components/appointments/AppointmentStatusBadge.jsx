@@ -1,14 +1,14 @@
-/**
+﻿/**
  * components/appointments/AppointmentStatusBadge.jsx
  * Colored pill badge for appointment status.
  */
 
 export const STATUS_META = {
-  pending:      { label: 'Pending',      emoji: '⏳', bg: 'bg-yellow-500/15', border: 'border-yellow-500/30', text: 'text-yellow-300' },
-  confirmed:    { label: 'Confirmed',    emoji: '✅', bg: 'bg-green-500/15',  border: 'border-green-500/30',  text: 'text-green-300'  },
-  rescheduled:  { label: 'Rescheduled', emoji: '🔄', bg: 'bg-purple-500/15', border: 'border-purple-500/30', text: 'text-purple-300' },
-  completed:    { label: 'Completed',    emoji: '✔️', bg: 'bg-blue-500/15',   border: 'border-blue-500/30',   text: 'text-blue-300'   },
-  cancelled:    { label: 'Cancelled',    emoji: '❌', bg: 'bg-red-500/15',    border: 'border-red-500/30',    text: 'text-red-300'    },
+  pending:      { label: 'Pending',      emoji: '⏳', bg: 'bg-yellow-500/15', border: 'border-yellow-500/30', text: 'text-[#7A5E2A]' },
+  confirmed:    { label: 'Confirmed',    emoji: '✅', bg: 'bg-green-500/15',  border: 'border-green-500/30',  text: 'text-primary-600'  },
+  rescheduled:  { label: 'Rescheduled', emoji: '🔄', bg: 'bg-purple-500/15', border: 'border-info-400', text: 'text-purple-300' },
+  completed:    { label: 'Completed',    emoji: '✔️', bg: 'bg-blue-500/15',   border: 'border-blue-500/30',   text: 'text-info-500'   },
+  cancelled:    { label: 'Cancelled',    emoji: '❌', bg: 'bg-red-500/15',    border: 'border-red-500/30',    text: 'text-[#8C4238]'    },
 };
 
 export default function AppointmentStatusBadge({ status, size = 'sm' }) {

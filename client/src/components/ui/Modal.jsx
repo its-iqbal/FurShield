@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 /**
- * Reusable modal overlay with animated entrance / exit.
+ * Reusable modal overlay — warm, clinical-but-gentle per DESIGN.md.
  * Props:
  *  - isOpen:   boolean
  *  - onClose:  () => void
@@ -40,25 +40,25 @@ export default function Modal({ isOpen, onClose, title, size = 'md', children })
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      {/* Backdrop */}
+      {/* Backdrop — warm semi-transparent, not pure black */}
       <div
-        className="absolute inset-0 bg-gray-950/80 backdrop-blur-sm animate-fade-in"
+        className="absolute inset-0 bg-[#33302B]/40 backdrop-blur-sm animate-fade-in"
         onClick={onClose}
       />
 
-      {/* Panel */}
+      {/* Panel — card-surface with warm shadow */}
       <div
-        className={`relative w-full ${sizeMap[size]} bg-gray-900 border border-white/10
-          rounded-2xl shadow-2xl shadow-black/50 animate-slide-up
+        className={`relative w-full ${sizeMap[size]} bg-white border border-[#E8E2D9]
+          rounded-2xl shadow-warm-lg animate-slide-up
           max-h-[90vh] flex flex-col overflow-hidden`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-white/10 flex-shrink-0">
-          <h2 id="modal-title" className="text-xl font-bold text-white">{title}</h2>
+        <div className="flex items-center justify-between px-6 py-5 border-b border-[#E8E2D9] flex-shrink-0">
+          <h2 id="modal-title" className="font-['Fraunces'] text-xl font-semibold text-primary-900">{title}</h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-500
-              hover:text-white hover:bg-white/10 transition-all duration-200"
+            className="w-8 h-8 rounded-xl flex items-center justify-center text-muted
+              hover:text-body hover:bg-primary-100 transition-colors duration-150"
             aria-label="Close modal"
           >
             ✕
@@ -66,7 +66,7 @@ export default function Modal({ isOpen, onClose, title, size = 'md', children })
         </div>
 
         {/* Scrollable body */}
-        <div className="overflow-y-auto flex-1 px-6 py-6">
+        <div className="overflow-y-auto flex-1 px-6 py-6 text-body">
           {children}
         </div>
       </div>

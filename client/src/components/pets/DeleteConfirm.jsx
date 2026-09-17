@@ -6,17 +6,17 @@ export default function DeleteConfirm({ petName, onConfirm, onCancel, isLoading 
   return (
     <div className="text-center py-2">
       {/* Icon */}
-      <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center
+      <div className="w-16 h-16 rounded-2xl bg-[#F4EBE8] border border-[#E0C8C4] flex items-center justify-center
         text-3xl mx-auto mb-5">
         🗑️
       </div>
 
-      <h3 className="text-xl font-bold text-white mb-2">Remove Pet?</h3>
-      <p className="text-gray-400 text-sm mb-1">
+      <h3 className="text-xl font-bold text-body mb-2">Remove Pet?</h3>
+      <p className="text-muted text-sm mb-1">
         Are you sure you want to remove{' '}
-        <span className="text-white font-semibold">{petName}</span> from your account?
+        <span className="text-strong font-semibold">{petName}</span> from your account?
       </p>
-      <p className="text-gray-600 text-xs mb-8">
+      <p className="text-subtle text-xs mb-8">
         This action can be undone by contacting support.
       </p>
 
@@ -33,8 +33,8 @@ export default function DeleteConfirm({ petName, onConfirm, onCancel, isLoading 
           disabled={isLoading}
           id="confirm-delete-pet-btn"
           className="flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm
-            bg-red-500/20 border border-red-500/50 text-red-400
-            hover:bg-red-500/30 hover:border-red-400 transition-all duration-200
+            bg-red-500/20 border border-red-500/50 text-[#8C4238]
+            hover:bg-[#F4EBE8] hover:border-red-400 transition-all duration-200
             disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {isLoading

@@ -3,12 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 
 const features = [
-  { icon: '🛡️', title: 'Pet Insurance Tracker',  description: "Monitor your pet's insurance policies, claims, and coverage details all in one place." },
-  { icon: '🐾', title: 'Health Records',           description: 'Keep comprehensive medical histories, vaccinations, and vet visit records for every pet.' },
-  { icon: '💊', title: 'Medication Reminders',     description: "Never miss a dose with smart reminders for all your pet's medications and treatments." },
-  { icon: '📊', title: 'Expense Analytics',        description: 'Visualize and understand your pet care spending with detailed insights and reports.' },
-  { icon: '🏥', title: 'Vet Directory',            description: 'Find trusted veterinarians nearby and schedule appointments seamlessly.' },
-  { icon: '🔔', title: 'Smart Alerts',             description: 'Get notified about policy renewals, check-up schedules, and important milestones.' },
+  { icon: '🛡️', title: 'Pet Insurance Tracker',  description: "Monitor your pet's insurance policies, claims, and coverage details—all in one organised record." },
+  { icon: '🐾', title: 'Health Records',           description: 'Keep comprehensive medical histories, vaccinations, and vet visit records for every pet in the family.' },
+  { icon: '💊', title: 'Medication Reminders',     description: "Never miss a dose. Smart reminders for all treatments, tick preventions, and supplements." },
+  { icon: '📊', title: 'Expense Analytics',        description: 'Understand your pet care spending with clear, honest insights—no dark patterns.' },
+  { icon: '🏥', title: 'Vet Appointments',         description: 'Find trusted veterinarians and schedule appointments without the phone-tag.' },
+  { icon: '🔔', title: 'Smart Alerts',             description: 'Timely nudges for policy renewals, check-up schedules, and vaccination milestones.' },
 ];
 
 const stats = [
@@ -18,7 +18,7 @@ const stats = [
   { value: '24/7', label: 'Support' },
 ];
 
-// ── Auth-aware Navbar ─────────────────────────────────────────────────────────
+// ── Navbar ────────────────────────────────────────────────────────────────────
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const { isAuthenticated, user, logout, getDashboardPath } = useAuth();
@@ -30,41 +30,34 @@ function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/');
-  };
+  const handleLogout = async () => { await logout(); navigate('/'); };
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled ? 'bg-gray-950/90 backdrop-blur-md border-b border-white/10 py-3' : 'py-5'
+      scrolled ? 'bg-[#FBF7F0]/95 backdrop-blur-sm border-b border-[#E8E2D9] py-3 shadow-warm-sm' : 'py-5'
     }`}>
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="text-2xl">🐾</span>
-          <span className="text-xl font-bold gradient-text">FurShield</span>
+        <Link to="/" className="flex items-center gap-2.5">
+          <span className="text-2xl" aria-hidden="true">🐾</span>
+          <span className="font-['Fraunces'] text-xl font-semibold text-primary-800 tracking-tight">FurShield</span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-8 text-sm text-gray-400">
-          <a href="#features" className="hover:text-white transition-colors">Features</a>
-          <a href="#stats"    className="hover:text-white transition-colors">Stats</a>
-          <a href="#contact"  className="hover:text-white transition-colors">Contact</a>
+        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-muted">
+          <a href="#features" className="hover:text-primary-700 transition-colors duration-150">Features</a>
+          <a href="#stats"    className="hover:text-primary-700 transition-colors duration-150">Trust</a>
+          <a href="#contact"  className="hover:text-primary-700 transition-colors duration-150">Join</a>
         </div>
 
         <div className="flex items-center gap-3">
           {isAuthenticated ? (
             <>
-              <Link to={getDashboardPath(user?.role)} className="btn-outline text-sm px-4 py-2">
-                Dashboard
-              </Link>
-              <button onClick={handleLogout} className="text-sm text-gray-500 hover:text-red-400 transition-colors px-3">
-                Sign out
-              </button>
+              <Link to={getDashboardPath(user?.role)} className="btn-outline text-sm px-4 py-2">Dashboard</Link>
+              <button onClick={handleLogout} className="btn-ghost text-sm">Sign out</button>
             </>
           ) : (
             <>
               <Link to="/login"    className="btn-outline text-sm px-4 py-2">Sign In</Link>
-              <Link to="/register" className="btn-primary text-sm px-4 py-2">Get Started</Link>
+              <Link to="/register" className="btn-accent text-sm px-4 py-2">Get Started</Link>
             </>
           )}
         </div>
@@ -73,41 +66,49 @@ function Navbar() {
   );
 }
 
+// ── Hero ──────────────────────────────────────────────────────────────────────
 function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+    <section className="relative min-h-screen flex items-center justify-center pt-20 bg-page overflow-hidden">
+      {/* Warm, static background texture — no pulsing blobs */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-600/20 rounded-full blur-3xl animate-pulse-slow" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent-500/15 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full opacity-30"
+          style={{ background: 'radial-gradient(circle, #C9DCC9 0%, transparent 70%)', transform: 'translate(30%, -20%)' }} />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full opacity-20"
+          style={{ background: 'radial-gradient(circle, #E8AF95 0%, transparent 70%)', transform: 'translate(-30%, 20%)' }} />
       </div>
 
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center animate-fade-in">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary-500/30 bg-primary-500/10 text-primary-300 text-sm font-medium mb-8">
-          <span className="w-2 h-2 rounded-full bg-primary-400 animate-pulse" />
-          Now in Beta – Join the Waitlist
+        {/* Status pill */}
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary-300 bg-primary-50 text-primary-700 text-sm font-medium mb-8">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary-500 flex-shrink-0" aria-hidden="true" />
+          Now in Beta — Join the Waitlist
         </div>
 
-        <h1 className="text-5xl md:text-7xl font-black leading-tight mb-6">
+        <h1 className="font-['Fraunces'] text-5xl md:text-7xl font-600 leading-[1.1] mb-6 text-primary-900">
           Your Pet's{' '}
-          <span className="gradient-text">Protection</span>
+          <em className="not-italic" style={{
+            background: 'linear-gradient(135deg, #4F6B54 0%, #7FA087 60%, #9BA187 100%)',
+            WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text'
+          }}>Protection</em>
           <br />Starts Here
         </h1>
 
-        <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10 leading-relaxed">
+        <p className="text-lg md:text-xl text-muted max-w-2xl mx-auto mb-10 leading-relaxed font-light">
           FurShield is the all-in-one platform to manage your pet's insurance, health records,
           and vet care — so you can focus on the moments that matter most.
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link to="/register" className="btn-primary text-base w-full sm:w-auto">
-            🐾 Protect My Pet
+          <Link to="/register" className="btn-accent text-base w-full sm:w-auto px-8 py-3.5">
+            Protect My Pet →
           </Link>
-          <a href="#features" className="btn-outline text-base w-full sm:w-auto">
-            Learn More →
+          <a href="#features" className="btn-outline text-base w-full sm:w-auto px-8 py-3.5">
+            See How It Works
           </a>
         </div>
 
-        <p className="mt-6 text-xs text-gray-600">
+        <p className="mt-6 text-xs text-subtle">
           No credit card required · Free for the first 30 days
         </p>
       </div>
@@ -115,15 +116,16 @@ function HeroSection() {
   );
 }
 
+// ── Stats ─────────────────────────────────────────────────────────────────────
 function StatsSection() {
   return (
-    <section id="stats" className="py-20 border-y border-white/5">
+    <section id="stats" className="py-20 bg-primary-50 border-y border-primary-200">
       <div className="max-w-6xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {stats.map((s) => (
-            <div key={s.label} className="text-center animate-slide-up">
-              <p className="text-4xl md:text-5xl font-black gradient-text mb-2">{s.value}</p>
-              <p className="text-gray-500 text-sm font-medium">{s.label}</p>
+            <div key={s.label} className="stat-pill animate-slide-up">
+              <p className="font-['Fraunces'] text-4xl md:text-5xl font-semibold text-primary-700 mb-1">{s.value}</p>
+              <p className="text-muted text-sm font-medium">{s.label}</p>
             </div>
           ))}
         </div>
@@ -132,25 +134,35 @@ function StatsSection() {
   );
 }
 
+// ── Features ──────────────────────────────────────────────────────────────────
 function FeaturesSection() {
   return (
-    <section id="features" className="py-24">
+    <section id="features" className="py-24 bg-page">
       <div className="max-w-6xl mx-auto px-6">
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-black mb-4">
-            Everything your pet <span className="gradient-text">deserves</span>
+          <h2 className="font-['Fraunces'] text-4xl md:text-5xl font-semibold mb-4 text-primary-900">
+            Everything your pet{' '}
+            <span style={{
+              background: 'linear-gradient(135deg, #4F6B54 0%, #7FA087 60%)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text'
+            }}>deserves</span>
           </h2>
-          <p className="text-gray-400 text-lg max-w-xl mx-auto">
-            Powerful tools designed to give pet owners total peace of mind.
+          <p className="text-muted text-lg max-w-xl mx-auto font-light">
+            Purposeful tools designed to give pet owners real peace of mind.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((f) => (
-            <div key={f.title} className="glass-card p-6 group cursor-pointer">
-              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-200">{f.icon}</div>
-              <h3 className="text-lg font-bold text-white mb-2">{f.title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">{f.description}</p>
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {features.map((f, i) => (
+            <div key={f.title}
+              id={`feature-${f.title.toLowerCase().replace(/\s+/g, '-')}`}
+              className="card p-7 group cursor-default hover:shadow-warm-md transition-shadow duration-200">
+              <div className="w-12 h-12 rounded-2xl bg-primary-100 flex items-center justify-center text-2xl mb-5
+                group-hover:bg-primary-200 transition-colors duration-150" aria-hidden="true">
+                {f.icon}
+              </div>
+              <h3 className="font-['Fraunces'] text-lg font-semibold text-primary-900 mb-2">{f.title}</h3>
+              <p className="text-muted text-sm leading-relaxed">{f.description}</p>
             </div>
           ))}
         </div>
@@ -159,27 +171,29 @@ function FeaturesSection() {
   );
 }
 
+// ── CTA ───────────────────────────────────────────────────────────────────────
 function CTASection() {
   return (
-    <section id="contact" className="py-24">
-      <div className="max-w-4xl mx-auto px-6 text-center">
-        <div className="glass-card p-12 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-600/10 to-accent-500/10 pointer-events-none" />
+    <section id="contact" className="py-24 bg-primary-50">
+      <div className="max-w-3xl mx-auto px-6 text-center">
+        <div className="card-surface p-12 relative overflow-hidden">
+          {/* Subtle warm tint — not a gradient blob */}
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-20 pointer-events-none"
+            style={{ background: 'radial-gradient(circle, #C9DCC9 0%, transparent 70%)', transform: 'translate(30%, -30%)' }} />
           <div className="relative z-10">
-            <h2 className="text-4xl md:text-5xl font-black mb-4">
-              Ready to <span className="gradient-text">shield</span> your fur baby?
+            <h2 className="font-['Fraunces'] text-4xl md:text-5xl font-semibold mb-4 text-primary-900">
+              Ready to shield your fur baby?
             </h2>
-            <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto">
+            <p className="text-muted text-lg mb-8 max-w-xl mx-auto font-light">
               Join thousands of pet parents who trust FurShield to keep their companions safe and healthy.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-md mx-auto">
               <input
                 type="email"
-                placeholder="Enter your email"
-                className="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-gray-500
-                  focus:outline-none focus:border-primary-400 transition-colors"
+                placeholder="your@email.com"
+                className="form-input flex-1"
               />
-              <Link to="/register" className="btn-primary whitespace-nowrap w-full sm:w-auto">
+              <Link to="/register" className="btn-accent whitespace-nowrap w-full sm:w-auto px-6 py-3">
                 Join Waitlist
               </Link>
             </div>
@@ -190,19 +204,20 @@ function CTASection() {
   );
 }
 
+// ── Footer ────────────────────────────────────────────────────────────────────
 function Footer() {
   return (
-    <footer className="border-t border-white/5 py-10">
+    <footer className="border-t border-[#E8E2D9] py-10 bg-page">
       <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🐾</span>
-          <span className="font-bold text-gray-400">FurShield</span>
+        <div className="flex items-center gap-2.5">
+          <span className="text-xl" aria-hidden="true">🐾</span>
+          <span className="font-['Fraunces'] font-semibold text-primary-800">FurShield</span>
         </div>
-        <p className="text-gray-600 text-sm">© {new Date().getFullYear()} FurShield. All rights reserved.</p>
-        <div className="flex items-center gap-6 text-sm text-gray-600">
-          <a href="#" className="hover:text-gray-300 transition-colors">Privacy</a>
-          <a href="#" className="hover:text-gray-300 transition-colors">Terms</a>
-          <a href="#" className="hover:text-gray-300 transition-colors">Support</a>
+        <p className="text-subtle text-sm">© {new Date().getFullYear()} FurShield. All rights reserved.</p>
+        <div className="flex items-center gap-6 text-sm text-muted">
+          <a href="#" className="hover:text-primary-700 transition-colors">Privacy</a>
+          <a href="#" className="hover:text-primary-700 transition-colors">Terms</a>
+          <a href="#" className="hover:text-primary-700 transition-colors">Support</a>
         </div>
       </div>
     </footer>
@@ -211,7 +226,7 @@ function Footer() {
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div className="min-h-screen bg-page">
       <Navbar />
       <HeroSection />
       <StatsSection />

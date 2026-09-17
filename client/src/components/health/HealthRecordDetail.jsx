@@ -8,7 +8,7 @@ import { getVisitMeta, formatDate, formatDateShort, daysUntil } from './healthCo
 // ── Tiny atoms ────────────────────────────────────────────────────────────────
 function SectionTitle({ icon, children }) {
   return (
-    <h4 className="flex items-center gap-2 text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
+    <h4 className="flex items-center gap-2 text-xs font-semibold text-muted uppercase tracking-widest mb-3">
       <span>{icon}</span>
       {children}
     </h4>
@@ -18,9 +18,9 @@ function SectionTitle({ icon, children }) {
 function InfoRow({ label, value }) {
   if (!value) return null;
   return (
-    <div className="flex items-start gap-3 py-2 border-b border-white/5 last:border-0">
-      <span className="text-xs text-gray-600 w-28 flex-shrink-0 mt-0.5">{label}</span>
-      <span className="text-sm text-gray-200 flex-1 leading-snug">{value}</span>
+    <div className="flex items-start gap-3 py-2 border-b border-[#E8E2D9] last:border-0">
+      <span className="text-xs text-subtle w-28 flex-shrink-0 mt-0.5">{label}</span>
+      <span className="text-sm text-body flex-1 leading-snug">{value}</span>
     </div>
   );
 }
@@ -31,23 +31,23 @@ function PrescriptionList({ prescriptions }) {
   return (
     <div className="mb-6">
       <SectionTitle icon="💊">Prescriptions</SectionTitle>
-      <div className="overflow-x-auto rounded-xl border border-white/10">
+      <div className="overflow-x-auto rounded-xl border border-[#E8E2D9]">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/10 bg-white/5">
-              <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Medication</th>
-              <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Dosage</th>
-              <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Duration</th>
-              <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase tracking-wider">Notes</th>
+            <tr className="border-b border-[#E8E2D9] bg-primary-50">
+              <th className="text-left px-4 py-2.5 text-xs font-semibold text-muted uppercase tracking-wider">Medication</th>
+              <th className="text-left px-4 py-2.5 text-xs font-semibold text-muted uppercase tracking-wider">Dosage</th>
+              <th className="text-left px-4 py-2.5 text-xs font-semibold text-muted uppercase tracking-wider">Duration</th>
+              <th className="text-left px-4 py-2.5 text-xs font-semibold text-muted uppercase tracking-wider">Notes</th>
             </tr>
           </thead>
           <tbody>
             {prescriptions.map((p, i) => (
-              <tr key={i} className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
-                <td className="px-4 py-3 text-white font-medium">{p.medicationName}</td>
-                <td className="px-4 py-3 text-gray-300">{p.dosage || '—'}</td>
-                <td className="px-4 py-3 text-gray-300">{p.duration || '—'}</td>
-                <td className="px-4 py-3 text-gray-500 text-xs">{p.notes || '—'}</td>
+              <tr key={i} className="border-b border-[#E8E2D9] last:border-0 hover:bg-primary-50 transition-colors">
+                <td className="px-4 py-3 text-body font-medium">{p.medicationName}</td>
+                <td className="px-4 py-3 text-body">{p.dosage || '—'}</td>
+                <td className="px-4 py-3 text-body">{p.duration || '—'}</td>
+                <td className="px-4 py-3 text-muted text-xs">{p.notes || '—'}</td>
               </tr>
             ))}
           </tbody>
@@ -72,12 +72,12 @@ function VaccinationList({ vaccinations }) {
           return (
             <div key={i}
               className="flex items-center justify-between p-3 rounded-xl bg-green-500/5
-                border border-green-500/20 gap-3 flex-wrap">
+                border border-primary-200 gap-3 flex-wrap">
               <div className="flex items-center gap-3">
                 <span className="text-xl">💉</span>
                 <div>
-                  <p className="text-sm font-semibold text-white">{v.vaccineName}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-sm font-semibold text-strong">{v.vaccineName}</p>
+                  <p className="text-xs text-muted">
                     Given: {v.dateGiven ? formatDate(v.dateGiven) : '—'}
                     {v.batchNumber && ` · Batch: ${v.batchNumber}`}
                   </p>
@@ -85,9 +85,9 @@ function VaccinationList({ vaccinations }) {
               </div>
               {v.nextDueDate && (
                 <span className={`text-xs px-3 py-1 rounded-full font-medium flex-shrink-0
-                  ${overdue ? 'bg-red-500/20 text-red-300 border border-red-500/30'
-                  : dueSoon  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                  :            'bg-green-500/10 text-green-400 border border-green-500/20'
+                  ${overdue ? 'bg-red-500/20 text-[#8C4238] border border-red-500/30'
+                  : dueSoon  ? 'bg-amber-500/20 text-amber-300 border border-accent-400'
+                  :            'bg-primary-50 text-primary-600 border border-primary-200'
                   }`}>
                   {overdue  ? `⚠️ Overdue by ${Math.abs(days)}d`
                   : dueSoon ? `⏰ Due in ${days}d`
@@ -108,7 +108,7 @@ function LabResults({ labResults }) {
   return (
     <div className="mb-6">
       <SectionTitle icon="🧪">Lab Results</SectionTitle>
-      <div className="bg-yellow-500/5 border border-yellow-500/20 rounded-xl p-4">
+      <div className="bg-yellow-500/5 border border-[#E3D0A8] rounded-xl p-4">
         <InfoRow label="Test Name"  value={labResults.testName} />
         <InfoRow label="Result"     value={labResults.result} />
         <InfoRow label="Normal Range" value={labResults.normalRange} />
@@ -128,7 +128,7 @@ function SymptomChips({ symptoms }) {
       <div className="flex flex-wrap gap-2">
         {symptoms.map((s, i) => (
           <span key={i}
-            className="text-xs px-3 py-1.5 rounded-full bg-amber-500/10
+            className="text-xs px-3 py-1.5 rounded-full bg-accent-400/15
               border border-amber-500/20 text-amber-300 capitalize">
             {s}
           </span>
@@ -147,11 +147,11 @@ function DocumentLinks({ documents }) {
       <div className="flex flex-col gap-2">
         {documents.map((url, i) => (
           <a key={i} href={url} target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10
+            className="flex items-center gap-3 p-3 rounded-xl bg-primary-50 border border-[#E8E2D9]
               hover:border-primary-500/40 hover:bg-primary-500/5 transition-all duration-200 group text-sm">
             <span className="text-lg">📁</span>
             <span className="text-primary-400 group-hover:underline truncate flex-1">{url}</span>
-            <span className="text-gray-600 text-xs flex-shrink-0">↗</span>
+            <span className="text-subtle text-xs flex-shrink-0">↗</span>
           </a>
         ))}
       </div>
@@ -174,10 +174,10 @@ export default function HealthRecordDetail({ record, onEdit, onDelete, onClose, 
             <div className={`text-xs font-semibold uppercase tracking-wider mb-1 ${meta.text}`}>
               {meta.label}
             </div>
-            <p className="text-white font-bold text-lg leading-tight">
+            <p className="text-strong font-bold text-lg leading-tight">
               {record.diagnosis || record.vaccinations?.map(v => v.vaccineName).join(', ') || 'No diagnosis'}
             </p>
-            <p className="text-gray-400 text-xs mt-1">
+            <p className="text-muted text-xs mt-1">
               {formatDate(record.visitDate)}
               {record.vet && ` · Dr. ${record.vet.name}`}
               {record.vet?.specialization && ` (${record.vet.specialization})`}
@@ -189,14 +189,14 @@ export default function HealthRecordDetail({ record, onEdit, onDelete, onClose, 
         <div className="flex gap-2 flex-shrink-0">
           <button onClick={onEdit}
             className="w-8 h-8 rounded-lg flex items-center justify-center text-sm
-              border border-white/10 text-gray-400 hover:text-primary-400
+              border border-[#E8E2D9] text-muted hover:text-primary-400
               hover:border-primary-500/40 hover:bg-primary-500/10 transition-all">
             ✏️
           </button>
           <button onClick={onDelete} disabled={isDeleting}
             className="w-8 h-8 rounded-lg flex items-center justify-center text-sm
-              border border-white/10 text-gray-400 hover:text-red-400
-              hover:border-red-500/40 hover:bg-red-500/10 transition-all disabled:opacity-40">
+              border border-[#E8E2D9] text-muted hover:text-[#8C4238]
+              hover:border-red-500/40 hover:bg-[#F4EBE8] transition-all disabled:opacity-40">
             {isDeleting
               ? <span className="w-3.5 h-3.5 border-2 border-red-400/40 border-t-red-400 rounded-full animate-spin" />
               : '🗑️'}
@@ -214,7 +214,7 @@ export default function HealthRecordDetail({ record, onEdit, onDelete, onClose, 
       {record.treatment && (
         <div className="mb-6">
           <SectionTitle icon="🩺">Treatment Plan</SectionTitle>
-          <div className="bg-blue-500/5 border border-blue-500/15 rounded-xl p-4 text-sm text-gray-300 leading-relaxed">
+          <div className="bg-blue-500/5 border border-blue-500/15 rounded-xl p-4 text-sm text-body leading-relaxed">
             {record.treatment}
           </div>
         </div>
@@ -223,7 +223,7 @@ export default function HealthRecordDetail({ record, onEdit, onDelete, onClose, 
       {record.notes && (
         <div className="mb-6">
           <SectionTitle icon="📝">Additional Notes</SectionTitle>
-          <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-sm text-gray-400 leading-relaxed">
+          <div className="bg-primary-50 border border-[#E8E2D9] rounded-xl p-4 text-sm text-muted leading-relaxed">
             {record.notes}
           </div>
         </div>
@@ -233,14 +233,14 @@ export default function HealthRecordDetail({ record, onEdit, onDelete, onClose, 
       {record.followUpDate && (
         <div className="mb-6">
           <SectionTitle icon="📅">Follow-up Date</SectionTitle>
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-purple-500/10 border border-purple-500/20">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-[#E8F0F5] border border-info-400">
             <span className="text-xl">📅</span>
             <div>
-              <p className="text-white text-sm font-semibold">{formatDate(record.followUpDate)}</p>
+              <p className="text-strong text-sm font-semibold">{formatDate(record.followUpDate)}</p>
               {(() => {
                 const d = daysUntil(record.followUpDate);
                 return (
-                  <p className={`text-xs ${d < 0 ? 'text-red-400' : d <= 7 ? 'text-amber-400' : 'text-gray-500'}`}>
+                  <p className={`text-xs ${d < 0 ? 'text-[#8C4238]' : d <= 7 ? 'text-accent-600' : 'text-muted'}`}>
                     {d < 0 ? `${Math.abs(d)} days overdue` : d === 0 ? 'Today!' : `In ${d} days`}
                   </p>
                 );
@@ -253,9 +253,9 @@ export default function HealthRecordDetail({ record, onEdit, onDelete, onClose, 
       <DocumentLinks documents={record.documents} />
 
       {/* Provenance row */}
-      <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-gray-600">
+      <div className="pt-4 border-t border-[#E8E2D9] flex items-center justify-between text-xs text-subtle">
         <span>
-          Logged by: <span className="text-gray-400">{record.addedBy === 'veterinarian' ? '🩺 Veterinarian' : '👤 Pet Owner'}</span>
+          Logged by: <span className="text-muted">{record.addedBy === 'veterinarian' ? '🩺 Veterinarian' : '👤 Pet Owner'}</span>
         </span>
         {record.createdAt && (
           <span>Created {formatDate(record.createdAt)}</span>

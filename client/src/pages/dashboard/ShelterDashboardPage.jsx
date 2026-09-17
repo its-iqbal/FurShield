@@ -7,8 +7,8 @@ import Modal from '../../components/ui/Modal.jsx';
 const SPECIES_EMOJI = { dog:'🐕', cat:'🐱', bird:'🦜', rabbit:'🐰', reptile:'🦎', fish:'🐠', other:'🐾' };
 const SPECIES = ['dog','cat','bird','rabbit','reptile','fish','other'];
 
-const inputCls = `w-full bg-gray-800/60 border border-white/10 rounded-xl px-4 py-2.5 text-white
-  placeholder-gray-600 text-sm focus:outline-none focus:border-primary-500/60 transition-all`;
+const inputCls = `w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body
+  placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500 transition-all`;
 
 // ── Add/Edit listing form ─────────────────────────────────────────────────────
 function ListingForm({ initial, onSave, onCancel, isSaving }) {
@@ -25,42 +25,42 @@ function ListingForm({ initial, onSave, onCancel, isSaving }) {
     <form onSubmit={(e) => { e.preventDefault(); onSave(form); }} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="text-sm text-gray-300 block mb-1">Pet Name *</label>
+          <label className="text-sm text-body block mb-1">Pet Name *</label>
           <input value={form.name} onChange={set('name')} required placeholder="e.g. Brownie" className={inputCls} />
         </div>
         <div>
-          <label className="text-sm text-gray-300 block mb-1">Species *</label>
+          <label className="text-sm text-body block mb-1">Species *</label>
           <select value={form.species} onChange={set('species')} className={inputCls}>
-            {SPECIES.map(s => <option key={s} value={s} className="bg-gray-900 capitalize">{s}</option>)}
+            {SPECIES.map(s => <option key={s} value={s} className="bg-panel capitalize">{s}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-sm text-gray-300 block mb-1">Breed</label>
+          <label className="text-sm text-body block mb-1">Breed</label>
           <input value={form.breed} onChange={set('breed')} placeholder="e.g. Labrador" className={inputCls} />
         </div>
         <div>
-          <label className="text-sm text-gray-300 block mb-1">Age</label>
+          <label className="text-sm text-body block mb-1">Age</label>
           <input value={form.age} onChange={set('age')} placeholder="e.g. 2 years" className={inputCls} />
         </div>
         <div>
-          <label className="text-sm text-gray-300 block mb-1">Gender</label>
+          <label className="text-sm text-body block mb-1">Gender</label>
           <select value={form.gender} onChange={set('gender')} className={inputCls}>
-            {['male','female','unknown'].map(g => <option key={g} value={g} className="bg-gray-900 capitalize">{g}</option>)}
+            {['male','female','unknown'].map(g => <option key={g} value={g} className="bg-panel capitalize">{g}</option>)}
           </select>
         </div>
         <div>
-          <label className="text-sm text-gray-300 block mb-1">Color</label>
+          <label className="text-sm text-body block mb-1">Color</label>
           <input value={form.color} onChange={set('color')} placeholder="e.g. Golden brown" className={inputCls} />
         </div>
         <div>
-          <label className="text-sm text-gray-300 block mb-1">Status</label>
+          <label className="text-sm text-body block mb-1">Status</label>
           <select value={form.status} onChange={set('status')} className={inputCls}>
-            {['available','pending','adopted'].map(s => <option key={s} value={s} className="bg-gray-900 capitalize">{s}</option>)}
+            {['available','pending','adopted'].map(s => <option key={s} value={s} className="bg-panel capitalize">{s}</option>)}
           </select>
         </div>
       </div>
       <div>
-        <label className="text-sm text-gray-300 block mb-1">Description</label>
+        <label className="text-sm text-body block mb-1">Description</label>
         <textarea value={form.description} onChange={set('description')} rows={3}
           placeholder="Tell potential adopters about this pet's personality…"
           className={`${inputCls} resize-none`} />
@@ -71,7 +71,7 @@ function ListingForm({ initial, onSave, onCancel, isSaving }) {
           { key: 'isNeutered',     label: '✂️ Neutered'       },
           { key: 'isHouseTrained', label: '🏠 House Trained'  },
         ].map(({ key, label }) => (
-          <label key={key} className="flex items-center gap-2 cursor-pointer text-sm text-gray-300">
+          <label key={key} className="flex items-center gap-2 cursor-pointer text-sm text-body">
             <input type="checkbox" checked={form[key]} onChange={setB(key)} className="w-4 h-4 accent-primary-500" />
             {label}
           </label>
@@ -90,30 +90,30 @@ function ListingForm({ initial, onSave, onCancel, isSaving }) {
 // ── Interest card ─────────────────────────────────────────────────────────────
 function InterestCard({ interest, onApprove, onReject }) {
   return (
-    <div className="p-4 rounded-xl border border-white/10 bg-white/5">
+    <div className="p-4 rounded-xl border border-[#E8E2D9] bg-primary-50">
       <div className="flex items-start justify-between gap-3 mb-3">
         <div>
-          <p className="text-white font-bold text-sm">{interest.owner?.name ?? 'Applicant'}</p>
-          <p className="text-gray-500 text-xs">{interest.owner?.email}</p>
-          <p className="text-gray-500 text-xs">For: <span className="text-gray-300">{interest.listing?.name ?? '—'}</span></p>
+          <p className="text-strong font-bold text-sm">{interest.owner?.name ?? 'Applicant'}</p>
+          <p className="text-muted text-xs">{interest.owner?.email}</p>
+          <p className="text-muted text-xs">For: <span className="text-body font-medium">{interest.listing?.name ?? '—'}</span></p>
         </div>
         <span className={`text-xs px-2 py-1 rounded-full border capitalize flex-shrink-0
-          ${interest.status === 'approved' ? 'bg-green-500/10 text-green-300 border-green-500/20'
-          : interest.status === 'rejected' ? 'bg-red-500/10 text-red-300 border-red-500/20'
-          : 'bg-yellow-500/10 text-yellow-300 border-yellow-500/20'}`}>
+          ${interest.status === 'approved' ? 'bg-primary-50 text-primary-600 border-primary-200'
+          : interest.status === 'rejected' ? 'bg-[#F4EBE8] text-[#8C4238] border-[#E0C8C4]'
+          : 'bg-[#F5EDD9] text-[#7A5E2A] border-[#E3D0A8]'}`}>
           {interest.status}
         </span>
       </div>
-      {interest.message && <p className="text-gray-400 text-xs mb-3 line-clamp-2">{interest.message}</p>}
-      {interest.experience && <p className="text-gray-600 text-xs mb-3">🏅 {interest.experience}</p>}
+      {interest.message && <p className="text-muted text-xs mb-3 line-clamp-2">{interest.message}</p>}
+      {interest.experience && <p className="text-subtle text-xs mb-3">🏅 {interest.experience}</p>}
       {interest.status === 'pending' && (
         <div className="flex gap-2">
           <button onClick={() => onApprove(interest._id)}
-            className="flex-1 py-1.5 rounded-lg bg-green-500/10 border border-green-500/30 text-green-300 text-xs font-medium hover:bg-green-500/20 transition-all">
+            className="flex-1 py-1.5 rounded-lg bg-primary-50 border border-green-500/30 text-primary-600 text-xs font-medium hover:bg-green-500/20 transition-all">
             ✅ Approve
           </button>
           <button onClick={() => onReject(interest._id)}
-            className="flex-1 py-1.5 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-xs font-medium hover:bg-red-500/20 transition-all">
+            className="flex-1 py-1.5 rounded-lg bg-[#F4EBE8] border border-red-500/30 text-[#8C4238] text-xs font-medium hover:bg-red-500/20 transition-all">
             ❌ Reject
           </button>
         </div>
@@ -178,35 +178,38 @@ export default function ShelterDashboardPage() {
 
         {/* Header */}
         <div className="mb-8">
-          <p className="text-gray-500 text-sm">Shelter Portal</p>
-          <h2 className="text-3xl font-black text-white gradient-text">{user?.shelterName || user?.name}</h2>
+          <p className="text-muted text-sm">Shelter Portal</p>
+          <h2 className="text-3xl font-black text-body gradient-text">{user?.shelterName || user?.name}</h2>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-8">
           {[
             { icon: '🐕', label: 'Total Listings',    value: listings.length,  color: 'text-primary-400'  },
-            { icon: '✅', label: 'Available',          value: available,         color: 'text-green-400'    },
-            { icon: '📬', label: 'Pending Requests',  value: pending,           color: 'text-yellow-400'   },
+            { icon: '✅', label: 'Available',          value: available,         color: 'text-primary-600'    },
+            { icon: '📬', label: 'Pending Requests',  value: pending,           color: 'text-[#7A5E2A]'   },
           ].map((s) => (
             <div key={s.label} className="glass-card p-4 text-center">
               <span className="text-2xl">{s.icon}</span>
               <p className={`text-3xl font-black mt-1 ${s.color}`}>{s.value}</p>
-              <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+              <p className="text-xs text-muted mt-0.5">{s.label}</p>
             </div>
           ))}
         </div>
 
         {/* Tab bar */}
         <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-          <div className="flex gap-1 p-1 bg-white/5 rounded-xl border border-white/10">
+          <div className="flex gap-1 p-1 bg-primary-50 rounded-xl border border-[#E8E2D9]">
             {[{ key:'listings', label:'My Listings', emoji:'🐕' }, { key:'interests', label:'Adoption Requests', emoji:'📬' }].map(({ key, label, emoji }) => (
               <button key={key} onClick={() => setTab(key)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all
-                  ${tab === key ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'}`}>
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all
+                  ${tab === key
+                    ? 'bg-white border border-primary-300 text-primary-900 font-semibold shadow-sm'
+                    : 'text-muted hover:text-body hover:bg-white/50'
+                  }`}>
                 <span>{emoji}</span> {label}
                 {key === 'interests' && pending > 0 && (
-                  <span className="text-xs px-1.5 py-0.5 rounded-full bg-yellow-500/30 text-yellow-300">{pending}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${tab === key ? 'bg-primary-100 text-primary-800' : 'bg-[#F5EDD9] text-[#7A5E2A]'}`}>{pending}</span>
                 )}
               </button>
             ))}
@@ -225,32 +228,32 @@ export default function ShelterDashboardPage() {
           listings.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-5xl mb-4 opacity-30">🐕</p>
-              <p className="text-gray-400 mb-4">No listings yet. Add your first pet for adoption.</p>
+              <p className="text-muted mb-4">No listings yet. Add your first pet for adoption.</p>
               <button onClick={() => { setEditing(null); setShowModal(true); }} className="btn-primary text-sm">+ Add First Listing</button>
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {listings.map((l) => (
                 <div key={l._id} className="glass-card overflow-hidden group">
-                  <div className="h-36 bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center text-5xl relative overflow-hidden">
+                  <div className="h-36 bg-primary-100/70 flex items-center justify-center text-5xl relative overflow-hidden border-b border-[#E8E2D9]">
                     {l.images?.[0] ? <img src={l.images[0]} alt={l.name} className="w-full h-full object-cover" /> : <span className="opacity-30">{SPECIES_EMOJI[l.species] ?? '🐾'}</span>}
                     <div className="absolute top-2 right-2">
                       <span className={`text-xs font-bold px-2 py-0.5 rounded-full capitalize
-                        ${l.status === 'available' ? 'bg-green-500/30 text-green-200' : 'bg-gray-500/30 text-gray-300'}`}>
+                        ${l.status === 'available' ? 'bg-primary-50 text-primary-700 border border-primary-200' : 'bg-[#EEEAE4] text-body'}`}>
                         {l.status}
                       </span>
                     </div>
                   </div>
                   <div className="p-3">
-                    <p className="text-white font-bold text-sm">{l.name}</p>
-                    <p className="text-gray-500 text-xs capitalize mb-3">{l.species} · {l.breed || '—'} · {l.age || '—'}</p>
+                    <p className="text-strong font-bold text-sm">{l.name}</p>
+                    <p className="text-muted text-xs capitalize mb-3">{l.species} · {l.breed || '—'} · {l.age || '—'}</p>
                     <div className="flex gap-2">
                       <button onClick={() => { setEditing(l); setShowModal(true); }}
-                        className="flex-1 text-xs py-1.5 rounded-lg border border-white/10 text-gray-400 hover:border-primary-500/40 hover:text-primary-400 transition-all">
+                        className="flex-1 text-xs py-1.5 rounded-lg border border-[#E8E2D9] text-muted hover:border-primary-500/40 hover:text-primary-400 transition-all">
                         ✏️ Edit
                       </button>
                       <button onClick={() => handleRemoveListing(l._id)}
-                        className="flex-1 text-xs py-1.5 rounded-lg border border-white/10 text-gray-400 hover:border-red-500/40 hover:text-red-400 transition-all">
+                        className="flex-1 text-xs py-1.5 rounded-lg border border-[#E8E2D9] text-muted hover:border-red-500/40 hover:text-[#8C4238] transition-all">
                         🗑️ Remove
                       </button>
                     </div>
@@ -263,7 +266,7 @@ export default function ShelterDashboardPage() {
           interests.length === 0 ? (
             <div className="text-center py-20">
               <p className="text-5xl mb-4 opacity-30">📬</p>
-              <p className="text-gray-400">No adoption requests yet.</p>
+              <p className="text-muted">No adoption requests yet.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -16,26 +16,26 @@ import { VISIT_TYPES } from '../../components/health/healthConfig.js';
 // ── Navbar ────────────────────────────────────────────────────────────────────
 function Navbar({ user, onLogout }) {
   return (
-    <header className="border-b border-white/5 px-6 py-4 flex items-center justify-between
-      sticky top-0 z-30 bg-gray-950/95 backdrop-blur-md">
+    <header className="border-b border-[#E8E2D9] px-6 py-4 flex items-center justify-between
+      sticky top-0 z-30 bg-page/95 backdrop-blur-md">
       <div className="flex items-center gap-6">
         <Link to="/" className="flex items-center gap-2">
           <span className="text-xl">🐾</span>
-          <span className="font-black gradient-text text-lg">FurShield</span>
+          <span className="font-semibold gradient-text text-lg">FurShield</span>
         </Link>
-        <div className="hidden md:flex items-center gap-2 text-sm text-gray-500">
-          <Link to="/dashboard" className="hover:text-gray-300 transition-colors">Dashboard</Link>
+        <div className="hidden md:flex items-center gap-2 text-sm text-muted">
+          <Link to="/dashboard" className="hover:text-body transition-colors">Dashboard</Link>
           <span>/</span>
-          <Link to="/dashboard/pets" className="hover:text-gray-300 transition-colors">My Pets</Link>
+          <Link to="/dashboard/pets" className="hover:text-body transition-colors">My Pets</Link>
           <span>/</span>
-          <span className="text-gray-300">Health Records</span>
+          <span className="text-body">Health Records</span>
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <span className="hidden sm:block text-sm text-gray-500">
-          Hi, <span className="text-gray-200">{user?.name?.split(' ')[0]}</span> 👋
+        <span className="hidden sm:block text-sm text-muted">
+          Hi, <span className="text-body">{user?.name?.split(' ')[0]}</span> 👋
         </span>
-        <button onClick={onLogout} className="text-xs text-gray-600 hover:text-red-400 transition-colors">
+        <button onClick={onLogout} className="text-xs text-subtle hover:text-[#8C4238] transition-colors">
           Sign out
         </button>
       </div>
@@ -53,11 +53,11 @@ function FilterBar({ active, onChange, counts }) {
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium
           transition-all whitespace-nowrap flex-shrink-0
           ${!active
-            ? 'bg-white/15 border-white/30 text-white'
-            : 'bg-white/5 border-white/10 text-gray-500 hover:border-white/20 hover:text-gray-300'
+            ? 'bg-white border-primary-300 text-primary-900 font-semibold shadow-sm'
+            : 'bg-primary-50 border-[#E8E2D9] text-muted hover:border-warm-md hover:text-body'
           }`}>
         All
-        {counts.all > 0 && <span className="bg-white/10 px-1.5 py-0.5 rounded-full">{counts.all}</span>}
+        {counts.all > 0 && <span className="bg-primary-100 text-primary-800 px-1.5 py-0.5 rounded-full text-[11px] font-semibold">{counts.all}</span>}
       </button>
 
       {VISIT_TYPES.map((t) => {
@@ -70,10 +70,10 @@ function FilterBar({ active, onChange, counts }) {
               transition-all whitespace-nowrap flex-shrink-0
               ${active === t.value
                 ? `${t.bg} ${t.border} ${t.text}`
-                : 'bg-white/5 border-white/10 text-gray-500 hover:border-white/20 hover:text-gray-300'
+                : 'bg-primary-50 border-[#E8E2D9] text-muted hover:border-warm-md hover:text-body'
               }`}>
             {t.emoji} {t.label}
-            <span className={`px-1.5 py-0.5 rounded-full ${active === t.value ? 'bg-white/10' : 'bg-white/5'}`}>
+            <span className={`px-1.5 py-0.5 rounded-full ${active === t.value ? 'bg-white/10' : 'bg-primary-50'}`}>
               {count}
             </span>
           </button>
@@ -100,8 +100,8 @@ function StatsStrip({ records }) {
       ].map((s) => (
         <div key={s.label} className="glass-card p-4 text-center">
           <span className="text-2xl">{s.icon}</span>
-          <p className="text-2xl font-black gradient-text mt-1">{s.value}</p>
-          <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+          <p className="text-2xl font-semibold gradient-text mt-1">{s.value}</p>
+          <p className="text-xs text-muted mt-0.5">{s.label}</p>
         </div>
       ))}
     </div>
@@ -113,7 +113,7 @@ function NoPetSelected() {
   return (
     <div className="flex flex-col items-center justify-center py-24 text-center">
       <div className="text-7xl opacity-30 mb-5">🐾</div>
-      <p className="text-gray-500 text-sm">Select a pet above to view their health records.</p>
+      <p className="text-muted text-sm">Select a pet above to view their health records.</p>
       <Link to="/dashboard/pets" className="btn-outline text-sm mt-4">
         ← Go to My Pets
       </Link>
@@ -195,7 +195,7 @@ export default function HealthRecordsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-page text-body">
       <Navbar user={user} onLogout={logout} />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
@@ -203,8 +203,8 @@ export default function HealthRecordsPage() {
         {/* Page header */}
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-black text-white">Health Records</h1>
-            <p className="text-gray-500 text-sm mt-1">
+            <h1 className="text-3xl font-heading font-semibold text-strong">Health Records</h1>
+            <p className="text-muted text-sm mt-1">
               {activePet ? `Viewing records for ${activePet.name}` : 'Select a pet below'}
             </p>
           </div>
@@ -217,7 +217,7 @@ export default function HealthRecordsPage() {
 
         {/* Pet tab strip */}
         {!petsLoading && pets.length > 0 && (
-          <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-thin border-b border-white/5">
+          <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-thin border-b border-[#E8E2D9]">
             {pets.map((pet) => (
               <PetTab key={pet._id} pet={pet}
                 isActive={pet._id === activePetId}
@@ -245,7 +245,7 @@ export default function HealthRecordsPage() {
 
               {/* Error */}
               {recError && (
-                <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center justify-between">
+                <div className="mb-4 p-3 rounded-xl bg-[#F4EBE8] border border-[#E0C8C4] text-[#8C4238] text-sm flex items-center justify-between">
                   <span>⚠️ {recError}</span>
                   <button onClick={fetchRecords} className="text-xs underline ml-3">Retry</button>
                 </div>
@@ -276,22 +276,22 @@ export default function HealthRecordsPage() {
               {/* Pet quick info */}
               {activePet && (
                 <div className="glass-card p-5">
-                  <h3 className="text-sm font-bold text-white mb-3">🐾 Pet Info</h3>
+                  <h3 className="text-sm font-bold text-body mb-3">🐾 Pet Info</h3>
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-gray-800 flex items-center justify-center text-xl border border-white/10">
+                    <div className="w-10 h-10 rounded-xl [#EEEAE4] flex items-center justify-center text-xl border border-[#E8E2D9]">
                       {activePet.images?.[0]
                         ? <img src={activePet.images[0]} alt={activePet.name} className="w-full h-full object-cover rounded-xl" />
                         : { dog:'🐕', cat:'🐱', bird:'🦜', rabbit:'🐰', reptile:'🦎', fish:'🐠' }[activePet.species] ?? '🐾'}
                     </div>
                     <div>
-                      <p className="text-white font-bold">{activePet.name}</p>
-                      <p className="text-gray-500 text-xs capitalize">{activePet.species} · {activePet.breed || '—'}</p>
+                      <p className="text-strong font-bold">{activePet.name}</p>
+                      <p className="text-muted text-xs capitalize">{activePet.species} · {activePet.breed || '—'}</p>
                     </div>
                   </div>
                   {activePet.allergies?.length > 0 && (
                     <div className="flex flex-wrap gap-1.5">
                       {activePet.allergies.map((a) => (
-                        <span key={a} className="text-xs px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20 capitalize">
+                        <span key={a} className="text-xs px-2 py-0.5 rounded-full bg-[#F4EBE8] text-[#8C4238] border border-[#E0C8C4] capitalize">
                           ⚠️ {a}
                         </span>
                       ))}
@@ -311,7 +311,7 @@ export default function HealthRecordsPage() {
       {/* ── Add Record Modal ── */}
       <Modal isOpen={showAddModal} onClose={() => setShowAdd(false)} title="Add Health Record 📋" size="xl">
         {formError && (
-          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+          <div className="mb-4 p-3 rounded-xl bg-[#F4EBE8] border border-[#E0C8C4] text-[#8C4238] text-sm">
             ⚠️ {formError}
           </div>
         )}
@@ -337,7 +337,7 @@ export default function HealthRecordsPage() {
       {/* ── Edit Record Modal ── */}
       <Modal isOpen={showEditModal} onClose={() => setShowEdit(false)} title="Edit Health Record ✏️" size="xl">
         {formError && (
-          <div className="mb-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+          <div className="mb-4 p-3 rounded-xl bg-[#F4EBE8] border border-[#E0C8C4] text-[#8C4238] text-sm">
             ⚠️ {formError}
           </div>
         )}

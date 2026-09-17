@@ -35,15 +35,15 @@ export default function AppointmentCard({ appt, onCancel, onViewDetail, isCancel
       <div className="flex items-start justify-between gap-4 mb-4">
         {/* Left: pet + vet info */}
         <div className="flex items-start gap-3 min-w-0">
-          <div className="w-11 h-11 rounded-xl bg-gray-800 flex items-center justify-center text-2xl
-            border border-white/10 flex-shrink-0">
+          <div className="w-11 h-11 rounded-xl [#EEEAE4] flex items-center justify-center text-2xl
+            border border-[#E8E2D9] flex-shrink-0">
             {petEmoji}
           </div>
           <div className="min-w-0">
-            <p className="text-white font-bold text-sm truncate">{petName}</p>
-            <p className="text-gray-400 text-xs truncate">
-              🩺 Dr. {vetName}
-              {clinicName && <span className="text-gray-600"> · {clinicName}</span>}
+            <p className="text-strong font-bold text-sm truncate">{petName}</p>
+            <p className="text-muted text-xs truncate">
+              🩺 {vetName?.startsWith('Dr.') ? vetName : `Dr. ${vetName}`}
+              {clinicName && <span className="text-subtle"> · {clinicName}</span>}
             </p>
           </div>
         </div>
@@ -56,11 +56,11 @@ export default function AppointmentCard({ appt, onCancel, onViewDetail, isCancel
       {/* Date/time row */}
       <div className="flex items-center gap-2 mb-3 text-sm">
         <span className="text-lg">📅</span>
-        <span className={`font-medium ${isRescheduled ? 'text-purple-300' : 'text-gray-300'}`}>
+        <span className={`font-medium ${isRescheduled ? 'text-purple-300' : 'text-body'}`}>
           {formatDateTime(displayDate, displayTime)}
         </span>
         {isRescheduled && (
-          <span className="text-xs text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded-full">
+          <span className="text-xs text-info-600 bg-[#E8F0F5] border border-info-400 px-2 py-0.5 rounded-full">
             Rescheduled
           </span>
         )}
@@ -68,24 +68,24 @@ export default function AppointmentCard({ appt, onCancel, onViewDetail, isCancel
 
       {/* Reason */}
       {appt.reason && (
-        <p className="text-xs text-gray-500 mb-3 bg-white/5 rounded-lg px-3 py-2 line-clamp-2">
+        <p className="text-xs text-muted mb-3 bg-primary-50 rounded-lg px-3 py-2 line-clamp-2">
           📝 {appt.reason}
         </p>
       )}
 
       {/* Vet notes (if present) */}
       {appt.vetNotes && (
-        <p className="text-xs text-blue-400 mb-3 bg-blue-500/5 border border-blue-500/15 rounded-lg px-3 py-2 line-clamp-2">
+        <p className="text-xs text-info-500 mb-3 bg-blue-500/5 border border-blue-500/15 rounded-lg px-3 py-2 line-clamp-2">
           🩺 {appt.vetNotes}
         </p>
       )}
 
       {/* Action row */}
-      <div className="flex items-center gap-2 pt-3 border-t border-white/5">
+      <div className="flex items-center gap-2 pt-3 border-t border-[#E8E2D9]">
         <button
           onClick={() => onViewDetail(appt)}
           id={`view-appt-${appt._id}`}
-          className="text-xs text-gray-400 hover:text-white border border-white/10
+          className="text-xs text-muted hover:text-body border border-[#E8E2D9]
             hover:border-white/25 rounded-lg px-3 py-1.5 transition-all"
         >
           View Details →
@@ -95,8 +95,8 @@ export default function AppointmentCard({ appt, onCancel, onViewDetail, isCancel
             onClick={() => onCancel(appt)}
             id={`cancel-appt-${appt._id}`}
             disabled={isCancelling}
-            className="text-xs text-red-400 hover:text-red-300 border border-red-500/20
-              hover:border-red-500/40 hover:bg-red-500/10 rounded-lg px-3 py-1.5
+            className="text-xs text-[#8C4238] hover:text-[#8C4238] border border-[#E0C8C4]
+              hover:border-red-500/40 hover:bg-[#F4EBE8] rounded-lg px-3 py-1.5
               transition-all disabled:opacity-40 ml-auto"
           >
             {isCancelling ? '…' : 'Cancel'}

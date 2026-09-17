@@ -28,6 +28,15 @@ export const getNotifications = asyncHandler(async (req, res) => {
 });
 
 /**
+ * GET /api/v1/notifications/unread-count
+ * Returns the unread notification count for the current user.
+ */
+export const getUnreadCount = asyncHandler(async (req, res) => {
+  const unreadCount = await Notification.countDocuments({ recipient: req.user._id, isRead: false });
+  sendResponse(res, 200, { unreadCount }, 'Unread count retrieved');
+});
+
+/**
  * PATCH /api/v1/notifications/:id/read
  * Marks a single notification as read.
  */

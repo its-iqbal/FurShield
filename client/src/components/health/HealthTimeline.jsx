@@ -1,4 +1,4 @@
-/**
+﻿/**
  * components/health/HealthTimeline.jsx
  * Renders the full vertical timeline, grouped by year.
  * Each entry shows a coloured dot, date, type badge, diagnosis snippet.
@@ -24,7 +24,7 @@ function TimelineEntry({ record, isSelected, onSelect, isLast }) {
             border-2 transition-all duration-300 flex-shrink-0
             ${isSelected
               ? `${meta.dot} border-transparent shadow-lg ${meta.glow} scale-110`
-              : `bg-gray-900 border-white/20 group-hover:${meta.border} group-hover:scale-105`
+              : `bg-panel border-warm-md group-hover:${meta.border} group-hover:scale-105`
             }`}
           title={meta.label}
         >
@@ -42,7 +42,7 @@ function TimelineEntry({ record, isSelected, onSelect, isLast }) {
           hover:scale-[1.01] hover:shadow-lg
           ${isSelected
             ? `${meta.bg} ${meta.border} shadow-lg ${meta.glow}`
-            : 'bg-white/5 border-white/10 hover:bg-white/[0.08] hover:border-white/20'
+            : 'bg-primary-50 border-[#E8E2D9] hover:bg-white/[0.08] hover:border-warm-md'
           }`}
         onClick={() => onSelect(record)}
       >
@@ -57,62 +57,62 @@ function TimelineEntry({ record, isSelected, onSelect, isLast }) {
             {/* Added-by badge */}
             <span className={`text-xs px-2 py-0.5 rounded-full
               ${record.addedBy === 'veterinarian'
-                ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                : 'bg-gray-700/40 text-gray-500 border border-white/5'
+                ? 'bg-[#E8F0F5] text-info-500 border border-info-400'
+                : '[#D9D4CC]/40 text-muted border border-[#E8E2D9]'
               }`}>
               {record.addedBy === 'veterinarian' ? '🩺 Vet logged' : '👤 Self logged'}
             </span>
           </div>
           {/* Date */}
-          <time className="text-xs text-gray-500 flex-shrink-0 mt-0.5">
+          <time className="text-xs text-muted flex-shrink-0 mt-0.5">
             {formatDate(record.visitDate)}
           </time>
         </div>
 
         {/* Vet name */}
         {record.vet && (
-          <p className="text-xs text-gray-500 mb-2">
+          <p className="text-xs text-muted mb-2">
             Dr. {record.vet?.name ?? 'Unknown'} · {record.vet?.specialization ?? ''}
           </p>
         )}
 
         {/* Diagnosis */}
         {record.diagnosis ? (
-          <p className="text-sm text-white font-medium leading-snug line-clamp-2">
+          <p className="text-sm text-body font-medium leading-snug line-clamp-2">
             {record.diagnosis}
           </p>
         ) : record.visitType === 'vaccination' && record.vaccinations?.length > 0 ? (
-          <p className="text-sm text-white font-medium">
+          <p className="text-sm text-body font-medium">
             {record.vaccinations.map((v) => v.vaccineName).join(', ')}
           </p>
         ) : (
-          <p className="text-sm text-gray-600 italic">No diagnosis recorded</p>
+          <p className="text-sm text-subtle italic">No diagnosis recorded</p>
         )}
 
         {/* Quick pills row */}
         <div className="flex flex-wrap gap-2 mt-3">
           {record.symptoms?.length > 0 && (
-            <span className="text-xs text-gray-500 bg-gray-800/60 px-2 py-0.5 rounded-md">
+            <span className="text-xs text-muted bg-white border border-[#E8E2D9] px-2 py-0.5 rounded-md">
               🤒 {record.symptoms.length} symptom{record.symptoms.length > 1 ? 's' : ''}
             </span>
           )}
           {record.prescriptions?.length > 0 && (
-            <span className="text-xs text-gray-500 bg-gray-800/60 px-2 py-0.5 rounded-md">
+            <span className="text-xs text-muted bg-white border border-[#E8E2D9] px-2 py-0.5 rounded-md">
               💊 {record.prescriptions.length} prescription{record.prescriptions.length > 1 ? 's' : ''}
             </span>
           )}
           {record.vaccinations?.length > 0 && (
-            <span className="text-xs text-green-500/80 bg-green-500/10 px-2 py-0.5 rounded-md">
+            <span className="text-xs text-green-500/80 bg-primary-50 px-2 py-0.5 rounded-md">
               💉 {record.vaccinations.length} vaccine{record.vaccinations.length > 1 ? 's' : ''}
             </span>
           )}
           {record.labResults?.testName && (
-            <span className="text-xs text-yellow-500/80 bg-yellow-500/10 px-2 py-0.5 rounded-md">
+            <span className="text-xs text-yellow-500/80 bg-[#F5EDD9] px-2 py-0.5 rounded-md">
               🧪 Lab results
             </span>
           )}
           {record.followUpDate && (
-            <span className="text-xs text-purple-400/80 bg-purple-500/10 px-2 py-0.5 rounded-md">
+            <span className="text-xs text-info-600/80 bg-[#E8F0F5] px-2 py-0.5 rounded-md">
               📅 Follow-up: {formatDateShort(record.followUpDate)}
             </span>
           )}
@@ -127,7 +127,7 @@ function YearBadge({ year }) {
   return (
     <div className="flex items-center gap-4 mb-6">
       <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
-      <span className="text-2xl font-black gradient-text">{year}</span>
+      <span className="text-2xl font-semibold gradient-text">{year}</span>
       <div className="flex-1 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
     </div>
   );
@@ -138,8 +138,8 @@ function EmptyTimeline({ onAdd }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
       <div className="text-7xl mb-5 opacity-40">📋</div>
-      <h3 className="text-xl font-bold text-white mb-2">No health records yet</h3>
-      <p className="text-gray-500 text-sm mb-6 max-w-xs">
+      <h3 className="text-xl font-bold text-body mb-2">No health records yet</h3>
+      <p className="text-muted text-sm mb-6 max-w-xs">
         Start building your pet's medical history by adding the first health record.
       </p>
       <button onClick={onAdd} className="btn-primary text-sm">
@@ -157,15 +157,15 @@ function TimelineSkeleton() {
         <div key={i} className="flex gap-5 animate-pulse">
           <div className="flex flex-col items-center">
             <div className="w-10 h-10 rounded-full bg-white/10 flex-shrink-0" />
-            {i < 3 && <div className="w-px flex-1 min-h-10 bg-white/5 mt-1" />}
+            {i < 3 && <div className="w-px flex-1 min-h-10 bg-primary-50 mt-1" />}
           </div>
-          <div className="flex-1 mb-6 bg-white/5 rounded-2xl p-4">
+          <div className="flex-1 mb-6 bg-primary-50 rounded-2xl p-4">
             <div className="flex gap-2 mb-3">
               <div className="h-5 w-24 rounded-full bg-white/10" />
-              <div className="h-5 w-20 rounded-full bg-white/5" />
+              <div className="h-5 w-20 rounded-full bg-primary-50" />
             </div>
             <div className="h-4 w-3/4 rounded bg-white/10 mb-2" />
-            <div className="h-4 w-1/2 rounded bg-white/5" />
+            <div className="h-4 w-1/2 rounded bg-primary-50" />
           </div>
         </div>
       ))}

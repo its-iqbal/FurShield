@@ -12,24 +12,24 @@ import DeleteConfirm from '../../components/pets/DeleteConfirm.jsx';
 // ── Navbar ────────────────────────────────────────────────────────────────────
 function Navbar({ user, onLogout }) {
   return (
-    <header className="border-b border-white/5 px-6 py-4 flex items-center justify-between
-      sticky top-0 z-30 bg-gray-950/95 backdrop-blur-md">
+    <header className="border-b border-[#E8E2D9] px-6 py-4 flex items-center justify-between
+      sticky top-0 z-30 bg-page/95 backdrop-blur-md">
       <div className="flex items-center gap-6">
         <Link to="/" className="flex items-center gap-2">
           <span className="text-xl">🐾</span>
-          <span className="font-black gradient-text text-lg">FurShield</span>
+          <span className="font-semibold gradient-text text-lg">FurShield</span>
         </Link>
-        <div className="hidden md:flex items-center gap-2 text-sm text-gray-500">
-          <Link to="/dashboard" className="hover:text-gray-300 transition-colors">Dashboard</Link>
+        <div className="hidden md:flex items-center gap-2 text-sm text-muted">
+          <Link to="/dashboard" className="hover:text-body transition-colors">Dashboard</Link>
           <span>/</span>
-          <span className="text-gray-300">Appointments</span>
+          <span className="text-body">Appointments</span>
         </div>
       </div>
       <div className="flex items-center gap-4">
-        <span className="hidden sm:block text-sm text-gray-500">
-          Hi, <span className="text-gray-200">{user?.name?.split(' ')[0]}</span> 👋
+        <span className="hidden sm:block text-sm text-muted">
+          Hi, <span className="text-body">{user?.name?.split(' ')[0]}</span> 👋
         </span>
-        <button onClick={onLogout} className="text-xs text-gray-600 hover:text-red-400 transition-colors">
+        <button onClick={onLogout} className="text-xs text-subtle hover:text-[#8C4238] transition-colors">
           Sign out
         </button>
       </div>
@@ -45,24 +45,24 @@ function TabBar({ active, onChange, counts }) {
     { key: 'cancelled', label: 'Cancelled', emoji: '❌' },
   ];
   return (
-    <div className="flex gap-1 p-1 bg-white/5 rounded-xl border border-white/10 w-fit">
+    <div className="flex gap-1 p-1 bg-primary-50 rounded-xl border border-[#E8E2D9] w-fit">
       {tabs.map((tab) => (
         <button
           key={tab.key}
           id={`tab-${tab.key}`}
           onClick={() => onChange(tab.key)}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium
             transition-all duration-200
             ${active === tab.key
-              ? 'bg-white/10 text-white'
-              : 'text-gray-500 hover:text-gray-300'
+              ? 'bg-white border border-primary-300 text-primary-900 font-semibold shadow-sm'
+              : 'text-muted hover:text-body hover:bg-white/50'
             }`}
         >
           <span>{tab.emoji}</span>
           <span>{tab.label}</span>
           {counts[tab.key] > 0 && (
-            <span className={`text-xs px-1.5 py-0.5 rounded-full
-              ${active === tab.key ? 'bg-primary-500/30 text-primary-300' : 'bg-white/10 text-gray-500'}`}>
+            <span className={`text-xs px-2 py-0.5 rounded-full font-bold
+              ${active === tab.key ? 'bg-primary-100 text-primary-800' : 'bg-[#EEEAE4] text-muted'}`}>
               {counts[tab.key]}
             </span>
           )}
@@ -80,12 +80,12 @@ function ApptSkeleton() {
         <div className="w-11 h-11 rounded-xl bg-white/10 flex-shrink-0" />
         <div className="flex-1 space-y-2">
           <div className="h-4 w-28 bg-white/10 rounded" />
-          <div className="h-3 w-40 bg-white/5 rounded" />
+          <div className="h-3 w-40 bg-primary-50 rounded" />
         </div>
         <div className="h-6 w-20 rounded-full bg-white/10" />
       </div>
-      <div className="h-4 w-64 bg-white/5 rounded mb-3" />
-      <div className="h-8 w-full bg-white/5 rounded-lg" />
+      <div className="h-4 w-64 bg-primary-50 rounded mb-3" />
+      <div className="h-8 w-full bg-primary-50 rounded-lg" />
     </div>
   );
 }
@@ -101,8 +101,8 @@ function EmptyTab({ tab, onBook }) {
   return (
     <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
       <p className="text-5xl mb-4 opacity-40">{m.emoji}</p>
-      <p className="text-gray-400 text-sm font-medium mb-1">{m.text}</p>
-      <p className="text-gray-600 text-xs mb-6">{m.sub}</p>
+      <p className="text-muted text-sm font-medium mb-1">{m.text}</p>
+      <p className="text-subtle text-xs mb-6">{m.sub}</p>
       {tab === 'upcoming' && (
         <button onClick={onBook} className="btn-primary text-sm">🩺 Book Appointment</button>
       )}
@@ -115,14 +115,14 @@ function StatsBar({ upcoming, past, cancelled }) {
   return (
     <div className="grid grid-cols-3 gap-4 mb-8">
       {[
-        { icon: '⏰', label: 'Upcoming',  value: upcoming.length,  color: 'text-yellow-400' },
-        { icon: '✔️', label: 'Completed', value: past.length,      color: 'text-green-400'  },
-        { icon: '❌', label: 'Cancelled', value: cancelled.length,  color: 'text-red-400'    },
+        { icon: '⏰', label: 'Upcoming',  value: upcoming.length,  color: 'text-[#7A5E2A]' },
+        { icon: '✔️', label: 'Completed', value: past.length,      color: 'text-primary-600'  },
+        { icon: '❌', label: 'Cancelled', value: cancelled.length,  color: 'text-[#8C4238]'    },
       ].map((s) => (
         <div key={s.label} className="glass-card p-4 text-center">
           <span className="text-2xl">{s.icon}</span>
           <p className={`text-2xl font-black mt-1 ${s.color}`}>{s.value}</p>
-          <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+          <p className="text-xs text-muted mt-0.5">{s.label}</p>
         </div>
       ))}
     </div>
@@ -133,14 +133,14 @@ function StatsBar({ upcoming, past, cancelled }) {
 function CancelConfirm({ appt, onConfirm, onCancel, isLoading }) {
   return (
     <div className="text-center py-2">
-      <div className="w-16 h-16 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-3xl mx-auto mb-5">
+      <div className="w-16 h-16 rounded-2xl bg-[#F4EBE8] border border-[#E0C8C4] flex items-center justify-center text-3xl mx-auto mb-5">
         ❌
       </div>
-      <h3 className="text-xl font-bold text-white mb-2">Cancel Appointment?</h3>
-      <p className="text-gray-400 text-sm mb-1">
-        Cancel the appointment for <span className="text-white font-semibold">{appt?.pet?.name}</span>?
+      <h3 className="text-xl font-bold text-body mb-2">Cancel Appointment?</h3>
+      <p className="text-muted text-sm mb-1">
+        Cancel the appointment for <span className="text-strong font-semibold">{appt?.pet?.name}</span>?
       </p>
-      <p className="text-gray-600 text-xs mb-3">
+      <p className="text-subtle text-xs mb-3">
         with Dr. {appt?.vet?.name} on{' '}
         {appt?.appointmentDate ? new Date(appt.appointmentDate).toLocaleDateString('en-IN', { day:'numeric', month:'short' }) : ''}
         {' '}at {appt?.appointmentTime}
@@ -149,8 +149,8 @@ function CancelConfirm({ appt, onConfirm, onCancel, isLoading }) {
         id="cancel-reason-input"
         placeholder="Reason for cancellation (optional)"
         rows={2}
-        className="w-full mb-4 bg-gray-800/60 border border-white/10 rounded-xl px-4 py-2.5 text-white
-          placeholder-gray-600 text-sm focus:outline-none focus:border-primary-500/60 resize-none"
+        className="w-full mb-4 bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body
+          placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500 resize-none"
         onChange={(e) => {
           // Pass reason up through a data attribute trick
           if (typeof window !== 'undefined') window._cancelReason = e.target.value;
@@ -163,7 +163,7 @@ function CancelConfirm({ appt, onConfirm, onCancel, isLoading }) {
           disabled={isLoading}
           id="confirm-cancel-appt-btn"
           className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm
-            bg-red-500/20 border border-red-500/50 text-red-400 hover:bg-red-500/30 transition-all
+            bg-red-500/20 border border-red-500/50 text-[#8C4238] hover:bg-[#F4EBE8] transition-all
             disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {isLoading
@@ -223,7 +223,7 @@ export default function AppointmentsPage() {
   const currentList = tabData[activeTab] ?? [];
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-page text-body">
       <Navbar user={user} onLogout={logout} />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
@@ -231,8 +231,8 @@ export default function AppointmentsPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-black text-white">Appointments</h1>
-            <p className="text-gray-500 text-sm mt-1">Manage your pet care visits</p>
+            <h1 className="text-3xl font-heading font-semibold text-strong">Appointments</h1>
+            <p className="text-muted text-sm mt-1">Manage your pet care visits</p>
           </div>
           <button
             id="book-appointment-btn"
@@ -247,7 +247,7 @@ export default function AppointmentsPage() {
         {/* No pets warning */}
         {pets.length === 0 && !loading && (
           <div className="glass-card p-6 text-center mb-8">
-            <p className="text-gray-400 text-sm mb-3">
+            <p className="text-muted text-sm mb-3">
               You need to add a pet before booking an appointment.
             </p>
             <Link to="/dashboard/pets" className="btn-primary text-sm">
@@ -258,7 +258,7 @@ export default function AppointmentsPage() {
 
         {/* Error */}
         {error && (
-          <div className="mb-5 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm flex items-center justify-between">
+          <div className="mb-5 p-3 rounded-xl bg-[#F4EBE8] border border-[#E0C8C4] text-[#8C4238] text-sm flex items-center justify-between">
             <span>⚠️ {error}</span>
             <button onClick={fetchAppointments} className="text-xs underline">Retry</button>
           </div>
@@ -272,7 +272,7 @@ export default function AppointmentsPage() {
           <TabBar active={activeTab} onChange={setTab} counts={counts} />
           <button
             onClick={fetchAppointments}
-            className="text-xs text-gray-600 hover:text-gray-300 transition-colors border border-white/10 px-3 py-1.5 rounded-lg hover:border-white/20"
+            className="text-xs text-subtle hover:text-body transition-colors border border-[#E8E2D9] px-3 py-1.5 rounded-lg hover:border-warm-md"
           >
             ↻ Refresh
           </button>
