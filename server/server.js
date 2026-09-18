@@ -44,8 +44,22 @@ app.use(morgan(NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(compression());
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
+const allowedOrigins = (CLIENT_URL || '').split(',').map((s) => s.trim()).filter(Boolean);
+
 app.use(cors({
-  origin:         CLIENT_URL,
+  origin: (origin, callback) => {
+    // Allow non-browser requests (Postman, curl, server-to-server)
+    if (!origin) return callback(null, true);
+    if (
+      allowedOrigins.includes(origin) ||
+      allowedOrigins.includes('*') ||
+      origin.endsWith('.vercel.app') ||
+      /^https?:\/\/localhost(:\d+)?$/.test(origin)
+    ) {
+      return callback(null, true);
+    }
+    return callback(new Error(`CORS origin blocked: ${origin}`));
+  },
   credentials:    true,
   methods:        ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
