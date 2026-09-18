@@ -21,10 +21,14 @@ import AdoptionPage     from './pages/adoption/AdoptionPage.jsx';
 import CareTipsPage     from './pages/care/CareTipsPage.jsx';
 
 // ── Veterinarian ──────────────────────────────────────────────────────────────
-import VetDashboardPage from './pages/dashboard/VetDashboardPage.jsx';
+import VetDashboardPage    from './pages/dashboard/VetDashboardPage.jsx';
+import VetAppointmentsPage from './pages/vet/VetAppointmentsPage.jsx';
+import VetPatientsPage     from './pages/vet/VetPatientsPage.jsx';
 
 // ── Shelter ───────────────────────────────────────────────────────────────────
 import ShelterDashboardPage from './pages/dashboard/ShelterDashboardPage.jsx';
+import ShelterListingsPage  from './pages/shelter/ShelterListingsPage.jsx';
+import ShelterInterestsPage from './pages/shelter/ShelterInterestsPage.jsx';
 
 // ── Shared (all authenticated roles) ─────────────────────────────────────────
 import NotificationsPage from './pages/notifications/NotificationsPage.jsx';
@@ -57,15 +61,15 @@ export default function App() {
           {/* ── Veterinarian routes ── */}
           <Route element={<ProtectedRoute roles={['veterinarian']} />}>
             <Route path="/vet/dashboard"    element={<VetDashboardPage />} />
-            <Route path="/vet/appointments" element={<VetDashboardPage />} />
-            <Route path="/vet/patients"     element={<VetDashboardPage />} />
+            <Route path="/vet/appointments" element={<VetAppointmentsPage />} />
+            <Route path="/vet/patients"     element={<VetPatientsPage />} />
           </Route>
 
           {/* ── Shelter routes ── */}
           <Route element={<ProtectedRoute roles={['shelter']} />}>
             <Route path="/shelter/dashboard" element={<ShelterDashboardPage />} />
-            <Route path="/shelter/listings"  element={<ShelterDashboardPage />} />
-            <Route path="/shelter/interests" element={<ShelterDashboardPage />} />
+            <Route path="/shelter/listings"  element={<ShelterListingsPage />} />
+            <Route path="/shelter/interests" element={<ShelterInterestsPage />} />
           </Route>
 
           {/* ── Shared authenticated routes (all roles) ── */}

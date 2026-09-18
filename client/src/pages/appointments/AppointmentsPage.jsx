@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import DashboardLayout from '../../components/layout/DashboardLayout.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import usePets from '../../hooks/usePets.js';
 import useAppointments from '../../hooks/useAppointments.js';
@@ -8,34 +9,6 @@ import AppointmentCard from '../../components/appointments/AppointmentCard.jsx';
 import AppointmentDetail from '../../components/appointments/AppointmentDetail.jsx';
 import BookingWizard from '../../components/appointments/BookingWizard.jsx';
 import DeleteConfirm from '../../components/pets/DeleteConfirm.jsx';
-
-// ── Navbar ────────────────────────────────────────────────────────────────────
-function Navbar({ user, onLogout }) {
-  return (
-    <header className="border-b border-[#E8E2D9] px-6 py-4 flex items-center justify-between
-      sticky top-0 z-30 bg-page/95 backdrop-blur-md">
-      <div className="flex items-center gap-6">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="text-xl">🐾</span>
-          <span className="font-semibold gradient-text text-lg">FurShield</span>
-        </Link>
-        <div className="hidden md:flex items-center gap-2 text-sm text-muted">
-          <Link to="/dashboard" className="hover:text-body transition-colors">Dashboard</Link>
-          <span>/</span>
-          <span className="text-body">Appointments</span>
-        </div>
-      </div>
-      <div className="flex items-center gap-4">
-        <span className="hidden sm:block text-sm text-muted">
-          Hi, <span className="text-body">{user?.name?.split(' ')[0]}</span> 👋
-        </span>
-        <button onClick={onLogout} className="text-xs text-subtle hover:text-[#8C4238] transition-colors">
-          Sign out
-        </button>
-      </div>
-    </header>
-  );
-}
 
 // ── Tab bar ───────────────────────────────────────────────────────────────────
 function TabBar({ active, onChange, counts }) {
@@ -223,10 +196,8 @@ export default function AppointmentsPage() {
   const currentList = tabData[activeTab] ?? [];
 
   return (
-    <div className="min-h-screen bg-page text-body">
-      <Navbar user={user} onLogout={logout} />
-
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+    <DashboardLayout pageTitle="Appointments 🩺">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
 
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
@@ -296,7 +267,7 @@ export default function AppointmentsPage() {
             />
           ))}
         </div>
-      </main>
+      </div>
 
       {/* ── Book Modal ── */}
       <Modal
@@ -340,6 +311,6 @@ export default function AppointmentsPage() {
           isLoading={cancelling}
         />
       </Modal>
-    </div>
+    </DashboardLayout>
   );
 }

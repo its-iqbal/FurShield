@@ -7,13 +7,18 @@ const inputCls = `w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5
   placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500/60
   focus:ring-2 focus:ring-primary-500/20 transition-all`;
 
-function Field({ label, required, children }) {
+function Field({ label, required, error, children }) {
   return (
     <div>
       <label className="text-sm font-medium text-body block mb-1.5">
-        {label} {required && <span className="text-primary-400">*</span>}
+        {label} {required && <span className="text-[#8C4238] font-bold">*</span>}
       </label>
       {children}
+      {error && (
+        <p className="text-xs text-[#8C4238] flex items-center gap-1 mt-1">
+          <span>⚠️</span> {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -41,6 +46,8 @@ export default function ProfilePage() {
     shelterName: '', shelterLicense: '',
   });
   const [pwForm, setPwForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
+  const [profileErrors, setProfileErrors] = useState({});
+  const [pwErrors, setPwErrors] = useState({});
   const [saving,   setSaving]   = useState(false);
   const [pwSaving, setPwSaving] = useState(false);
   const [msg,      setMsg]      = useState(null);
@@ -74,17 +81,35 @@ export default function ProfilePage() {
     })();
   }, []);
 
-  const set = (k) => (e) => setForm(p => ({ ...p, [k]: e.target.value }));
-  const setPw = (k) => (e) => setPwForm(p => ({ ...p, [k]: e.target.value }));
+  const set = (k) => (e) => {
+    setForm(p => ({ ...p, [k]: e.target.value }));
+    if (profileErrors[k]) setProfileErrors(p => { const n = { ...p }; delete n[k]; return n; });
+  };
+  const setPw = (k) => (e) => {
+    setPwForm(p => ({ ...p, [k]: e.target.value }));
+    if (pwErrors[k]) setPwErrors(p => { const n = { ...p }; delete n[k]; return n; });
+  };
+
+  const validateProfile = () => {
+    const errs = {};
+    if (!form.name.trim()) {
+      errs.name = 'Full Name is required';
+    } else if (form.name.trim().length < 2) {
+      errs.name = 'Name must be at least 2 characters';
+    }
+    setProfileErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
 
   const handleSaveProfile = async (e) => {
     e.preventDefault();
+    if (!validateProfile()) return;
     setSaving(true); setMsg(null);
     try {
       const payload = {
-        name:  form.name,
-        phone: form.phone || undefined,
-        bio:   form.bio   || undefined,
+        name:  form.name.trim(),
+        phone: form.phone ? form.phone.trim() : undefined,
+        bio:   form.bio   ? form.bio.trim()   : undefined,
         address: { street: form.street, city: form.city, state: form.state, pincode: form.pincode, country: form.country },
         ...(user?.role === 'veterinarian' && {
           specialization: form.specialization, experience: form.experience ? Number(form.experience) : undefined,
@@ -100,16 +125,32 @@ export default function ProfilePage() {
     } finally { setSaving(false); }
   };
 
+  const validatePassword = () => {
+    const errs = {};
+    if (!pwForm.currentPassword) errs.currentPassword = 'Current password is required';
+    if (!pwForm.newPassword) {
+      errs.newPassword = 'New password is required';
+    } else if (pwForm.newPassword.length < 8) {
+      errs.newPassword = 'New password must be at least 8 characters';
+    }
+    if (!pwForm.confirmPassword) {
+      errs.confirmPassword = 'Confirm your new password';
+    } else if (pwForm.newPassword !== pwForm.confirmPassword) {
+      errs.confirmPassword = 'New passwords do not match';
+    }
+    setPwErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
   const handleChangePassword = async (e) => {
     e.preventDefault();
-    if (pwForm.newPassword !== pwForm.confirmPassword) {
-      setPwMsg({ type: 'error', text: 'New passwords do not match.' }); return;
-    }
+    if (!validatePassword()) return;
     setPwSaving(true); setPwMsg(null);
     try {
       await UserService.changePassword({ currentPassword: pwForm.currentPassword, newPassword: pwForm.newPassword });
       setPwMsg({ type: 'success', text: 'Password changed successfully!' });
       setPwForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      setPwErrors({});
     } catch (err) {
       setPwMsg({ type: 'error', text: err.response?.data?.message || 'Failed to change password.' });
     } finally { setPwSaving(false); }
@@ -153,8 +194,17 @@ export default function ProfilePage() {
         <SectionCard title="Personal Information" icon="📝">
           <form onSubmit={handleSaveProfile} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Full Name" required>
-                <input value={form.name} onChange={set('name')} placeholder="Your full name" className={inputCls} />
+              <Field label="Full Name" required error={profileErrors.name}>
+                <input
+                  value={form.name}
+                  onChange={set('name')}
+                  placeholder="Your full name"
+                  className={`w-full rounded-xl px-4 py-2.5 text-body placeholder-[#8A8279] text-sm focus:outline-none transition-all ${
+                    profileErrors.name
+                      ? 'border border-[#B87A74] bg-[#FDF7F7] focus:border-[#8C4238]'
+                      : 'border border-[#E8E2D9] bg-white focus:border-primary-500'
+                  }`}
+                />
               </Field>
               <Field label="Email Address">
                 <input value={form.email} disabled className={`${inputCls} opacity-50 cursor-not-allowed`} />
@@ -221,8 +271,18 @@ export default function ProfilePage() {
               { key: 'newPassword',     label: 'New Password',      placeholder: 'At least 8 characters' },
               { key: 'confirmPassword', label: 'Confirm New Password', placeholder: 'Repeat new password' },
             ].map(({ key, label, placeholder }) => (
-              <Field key={key} label={label} required>
-                <input type="password" value={pwForm[key]} onChange={setPw(key)} placeholder={placeholder} className={inputCls} />
+              <Field key={key} label={label} required error={pwErrors[key]}>
+                <input
+                  type="password"
+                  value={pwForm[key]}
+                  onChange={setPw(key)}
+                  placeholder={placeholder}
+                  className={`w-full rounded-xl px-4 py-2.5 text-body placeholder-[#8A8279] text-sm focus:outline-none transition-all ${
+                    pwErrors[key]
+                      ? 'border border-[#B87A74] bg-[#FDF7F7] focus:border-[#8C4238]'
+                      : 'border border-[#E8E2D9] bg-white focus:border-primary-500'
+                  }`}
+                />
               </Field>
             ))}
             <MsgBanner msg={pwMsg} />

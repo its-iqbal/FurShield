@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import DashboardLayout from '../../components/layout/DashboardLayout.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import usePets from '../../hooks/usePets.js';
 import useHealthRecords from '../../hooks/useHealthRecords.js';
@@ -12,36 +13,6 @@ import HealthRecordForm from '../../components/health/HealthRecordForm.jsx';
 import VaccinationReminders from '../../components/health/VaccinationReminders.jsx';
 import DeleteConfirm from '../../components/pets/DeleteConfirm.jsx';
 import { VISIT_TYPES } from '../../components/health/healthConfig.js';
-
-// ── Navbar ────────────────────────────────────────────────────────────────────
-function Navbar({ user, onLogout }) {
-  return (
-    <header className="border-b border-[#E8E2D9] px-6 py-4 flex items-center justify-between
-      sticky top-0 z-30 bg-page/95 backdrop-blur-md">
-      <div className="flex items-center gap-6">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="text-xl">🐾</span>
-          <span className="font-semibold gradient-text text-lg">FurShield</span>
-        </Link>
-        <div className="hidden md:flex items-center gap-2 text-sm text-muted">
-          <Link to="/dashboard" className="hover:text-body transition-colors">Dashboard</Link>
-          <span>/</span>
-          <Link to="/dashboard/pets" className="hover:text-body transition-colors">My Pets</Link>
-          <span>/</span>
-          <span className="text-body">Health Records</span>
-        </div>
-      </div>
-      <div className="flex items-center gap-4">
-        <span className="hidden sm:block text-sm text-muted">
-          Hi, <span className="text-body">{user?.name?.split(' ')[0]}</span> 👋
-        </span>
-        <button onClick={onLogout} className="text-xs text-subtle hover:text-[#8C4238] transition-colors">
-          Sign out
-        </button>
-      </div>
-    </header>
-  );
-}
 
 // ── Filter bar ────────────────────────────────────────────────────────────────
 function FilterBar({ active, onChange, counts }) {
@@ -195,10 +166,8 @@ export default function HealthRecordsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-page text-body">
-      <Navbar user={user} onLogout={logout} />
-
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <DashboardLayout pageTitle="Health Records 📋">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
 
         {/* Page header */}
         <div className="flex items-center justify-between mb-6">
@@ -306,7 +275,7 @@ export default function HealthRecordsPage() {
             </aside>
           </div>
         )}
-      </main>
+      </div>
 
       {/* ── Add Record Modal ── */}
       <Modal isOpen={showAddModal} onClose={() => setShowAdd(false)} title="Add Health Record 📋" size="xl">
@@ -358,6 +327,6 @@ export default function HealthRecordsPage() {
           isLoading={formLoading}
         />
       </Modal>
-    </div>
+    </DashboardLayout>
   );
 }

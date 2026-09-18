@@ -13,25 +13,51 @@ function Field({ label, required, hint, error, children }) {
   return (
     <div className="flex flex-col gap-1.5">
       <label className="text-sm font-medium text-body">
-        {label} {required && <span className="text-primary-400">*</span>}
+        {label} {required && <span className="text-[#8C4238] font-bold">*</span>}
       </label>
       {children}
-      {hint  && <p className="text-xs text-subtle">{hint}</p>}
-      {error && <p className="text-xs text-[#8C4238]">{error}</p>}
+      {hint && !error && <p className="text-xs text-muted">{hint}</p>}
+      {error && (
+        <p className="text-xs text-[#8C4238] flex items-center gap-1">
+          <span>⚠️</span> {error}
+        </p>
+      )}
     </div>
   );
 }
 
-const inputCls = `w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body
-  placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500
-  focus:ring-2 focus:ring-primary-500/20 transition-all duration-200`;
-
-function TextInput({ value, onChange, placeholder, type = 'text', ...rest }) {
-  return <input type={type} value={value} onChange={onChange} placeholder={placeholder} className={inputCls} {...rest} />;
+function TextInput({ value, onChange, placeholder, type = 'text', error, className = '', ...rest }) {
+  return (
+    <input
+      type={type}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      className={`w-full rounded-xl px-4 py-2.5 text-body placeholder-[#8A8279] text-sm transition-all duration-200 focus:outline-none focus:ring-2 ${
+        error
+          ? 'border border-[#B87A74] bg-[#FDF7F7] focus:border-[#8C4238] focus:ring-[#8C4238]/20'
+          : 'border border-[#E8E2D9] bg-white focus:border-primary-500 focus:ring-primary-500/20'
+      } ${className}`}
+      {...rest}
+    />
+  );
 }
 
-function Textarea({ value, onChange, placeholder, rows = 3 }) {
-  return <textarea value={value} onChange={onChange} placeholder={placeholder} rows={rows} className={`${inputCls} resize-none`} />;
+function Textarea({ value, onChange, placeholder, rows = 3, error, className = '', ...rest }) {
+  return (
+    <textarea
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      rows={rows}
+      className={`w-full rounded-xl px-4 py-2.5 text-body placeholder-[#8A8279] text-sm transition-all duration-200 resize-none focus:outline-none focus:ring-2 ${
+        error
+          ? 'border border-[#B87A74] bg-[#FDF7F7] focus:border-[#8C4238] focus:ring-[#8C4238]/20'
+          : 'border border-[#E8E2D9] bg-white focus:border-primary-500 focus:ring-primary-500/20'
+      } ${className}`}
+      {...rest}
+    />
+  );
 }
 
 function SectionDivider({ icon, label }) {
@@ -256,8 +282,34 @@ export default function HealthRecordForm({ initialData = null, onSubmit, onCance
   // ── Validation ──────────────────────────────────────────────────────────────
   const validate = () => {
     const e = {};
-    if (!form.visitType) e.visitType = 'Select a visit type';
-    if (!form.visitDate) e.visitDate = 'Visit date is required';
+    if (!form.visitType) e.visitType = 'Please select a visit type';
+    if (!form.visitDate) {
+      e.visitDate = 'Visit date is required';
+    } else {
+      const vDate = new Date(form.visitDate);
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      if (vDate > tomorrow) {
+        e.visitDate = 'Visit date cannot be in the future';
+      }
+    }
+
+    if (form.followUpDate && form.visitDate) {
+      if (new Date(form.followUpDate) < new Date(form.visitDate)) {
+        e.followUpDate = 'Follow-up date cannot be earlier than the visit date';
+      }
+    }
+
+    if (form.documents && form.documents.trim()) {
+      const lines = form.documents.split('\n').map(s => s.trim()).filter(Boolean);
+      for (const line of lines) {
+        if (!/^https?:\/\/.+/i.test(line)) {
+          e.documents = 'All document URLs must begin with http:// or https://';
+          break;
+        }
+      }
+    }
+
     form.prescriptions.forEach((p, i) => {
       if (!p.medicationName.trim()) e[`rx${i}`] = 'Medication name is required';
     });
@@ -307,7 +359,10 @@ export default function HealthRecordForm({ initialData = null, onSubmit, onCance
         <div className="grid grid-cols-4 gap-2 mt-1">
           {VISIT_TYPES.map((t) => (
             <button key={t.value} type="button"
-              onClick={() => set('visitType')(t.value)}
+              onClick={() => {
+                set('visitType')(t.value);
+                if (errors.visitType) setErrs(p => { const n = { ...p }; delete n.visitType; return n; });
+              }}
               className={`flex flex-col items-center gap-1 p-3 rounded-xl border text-center
                 transition-all duration-200 hover:scale-105
                 ${form.visitType === t.value
@@ -323,7 +378,15 @@ export default function HealthRecordForm({ initialData = null, onSubmit, onCance
 
       <div className="mt-4">
         <Field label="Visit Date" required error={errors.visitDate}>
-          <TextInput type="date" value={form.visitDate} onChange={setE('visitDate')} />
+          <TextInput
+            type="date"
+            value={form.visitDate}
+            onChange={(e) => {
+              setE('visitDate')(e);
+              if (errors.visitDate) setErrs(p => { const n = { ...p }; delete n.visitDate; return n; });
+            }}
+            error={errors.visitDate}
+          />
         </Field>
       </div>
 
@@ -399,20 +462,32 @@ export default function HealthRecordForm({ initialData = null, onSubmit, onCance
 
       {/* ── Documents ── */}
       <SectionDivider icon="📄" label="Documents" />
-      <Field label="Document URLs" hint="One URL per line — X-rays, lab reports, certificates">
+      <Field label="Document URLs" hint="One URL per line — X-rays, lab reports, certificates" error={errors.documents}>
         <Textarea
           value={form.documents}
-          onChange={setE('documents')}
+          onChange={(e) => {
+            setE('documents')(e);
+            if (errors.documents) setErrs(p => { const n = { ...p }; delete n.documents; return n; });
+          }}
           placeholder={"https://storage.example.com/xray.pdf\nhttps://storage.example.com/report.pdf"}
           rows={3}
+          error={errors.documents}
         />
       </Field>
 
       {/* ── Follow-up ── */}
       <SectionDivider icon="📅" label="Follow-up & Notes" />
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field label="Follow-up Date">
-          <TextInput type="date" value={form.followUpDate} onChange={setE('followUpDate')} />
+        <Field label="Follow-up Date" error={errors.followUpDate}>
+          <TextInput
+            type="date"
+            value={form.followUpDate}
+            onChange={(e) => {
+              setE('followUpDate')(e);
+              if (errors.followUpDate) setErrs(p => { const n = { ...p }; delete n.followUpDate; return n; });
+            }}
+            error={errors.followUpDate}
+          />
         </Field>
         <div /> {/* spacer */}
       </div>

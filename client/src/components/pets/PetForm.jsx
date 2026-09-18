@@ -22,46 +22,65 @@ const DEFAULT_FORM = {
   name: '', species: '', breed: '', age: '', gender: 'unknown',
   weight: '', color: '', dob: '', microchipId: '',
   isNeutered: false, allergies: '', medicalHistory: '',
+  image: '',
 };
+
+const SAMPLE_AVATARS = [
+  { label: 'Golden Retriever', url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=600&auto=format&fit=crop&q=80' },
+  { label: 'Persian Cat', url: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600&auto=format&fit=crop&q=80' },
+  { label: 'Beagle', url: 'https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=600&auto=format&fit=crop&q=80' },
+  { label: 'Orange Cat', url: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=600&auto=format&fit=crop&q=80' },
+  { label: 'Parrot', url: 'https://images.unsplash.com/photo-1552728089-57bdde30beb3?w=600&auto=format&fit=crop&q=80' },
+  { label: 'Bunny', url: 'https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?w=600&auto=format&fit=crop&q=80' },
+];
 
 // ── Small field atoms ─────────────────────────────────────────────────────────
 function Field({ label, required, error, children }) {
   return (
     <div className="flex flex-col gap-1.5">
       <label className="text-sm font-medium text-body">
-        {label} {required && <span className="text-primary-400">*</span>}
+        {label} {required && <span className="text-[#8C4238] font-bold">*</span>}
       </label>
       {children}
-      {error && <p className="text-xs text-[#8C4238]">{error}</p>}
+      {error && (
+        <p className="text-xs text-[#8C4238] flex items-center gap-1 mt-0.5">
+          <span>⚠️</span> {error}
+        </p>
+      )}
     </div>
   );
 }
 
-function TextInput({ value, onChange, placeholder, type = 'text', ...props }) {
+function TextInput({ value, onChange, placeholder, type = 'text', error, ...props }) {
   return (
     <input
       type={type}
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className="w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body
-        placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500
-        focus:ring-2 focus:ring-primary-500/20 transition-all duration-200"
+      className={`w-full rounded-xl px-4 py-2.5 text-body text-sm placeholder-[#8A8279] transition-all duration-200 focus:outline-none focus:ring-2 ${
+        error
+          ? 'border border-[#B87A74] bg-[#FDF7F7] focus:border-[#8C4238] focus:ring-[#8C4238]/20'
+          : 'border border-[#E8E2D9] bg-white focus:border-primary-500 focus:ring-primary-500/20'
+      }`}
       {...props}
     />
   );
 }
 
-function Textarea({ value, onChange, placeholder, rows = 3 }) {
+function Textarea({ value, onChange, placeholder, rows = 3, error, ...props }) {
   return (
     <textarea
       value={value}
       onChange={onChange}
       placeholder={placeholder}
       rows={rows}
-      className="w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body
-        placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500
-        focus:ring-2 focus:ring-primary-500/20 transition-all duration-200 resize-none"
+      className={`w-full rounded-xl px-4 py-2.5 text-body text-sm placeholder-[#8A8279] transition-all duration-200 resize-none focus:outline-none focus:ring-2 ${
+        error
+          ? 'border border-[#B87A74] bg-[#FDF7F7] focus:border-[#8C4238] focus:ring-[#8C4238]/20'
+          : 'border border-[#E8E2D9] bg-white focus:border-primary-500 focus:ring-primary-500/20'
+      }`}
+      {...props}
     />
   );
 }
@@ -101,6 +120,7 @@ export default function PetForm({ initialData = null, onSubmit, onCancel, isLoad
         isNeutered:    initialData.isNeutered     ?? false,
         allergies:     (initialData.allergies ?? []).join(', '),
         medicalHistory:initialData.medicalHistory ?? '',
+        image:         initialData.images?.[0] ?? '',
       });
     } else {
       setForm(DEFAULT_FORM);
@@ -108,16 +128,59 @@ export default function PetForm({ initialData = null, onSubmit, onCancel, isLoad
     setErrs({});
   }, [initialData]);
 
-  const set = (field) => (e) =>
-    setForm((p) => ({ ...p, [field]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }));
+  const set = (field) => (e) => {
+    const val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    setForm((p) => ({ ...p, [field]: val }));
+    if (errors[field]) {
+      setErrs((p) => {
+        const next = { ...p };
+        delete next[field];
+        return next;
+      });
+    }
+  };
 
   // ── Validation ──────────────────────────────────────────────────────────────
   const validate = () => {
     const e = {};
-    if (!form.name.trim())    e.name    = 'Pet name is required';
-    if (!form.species)        e.species = 'Please select a species';
-    if (form.age && isNaN(Number(form.age)))    e.age    = 'Age must be a number';
-    if (form.weight && isNaN(Number(form.weight))) e.weight = 'Weight must be a number';
+    const nameTrim = form.name.trim();
+    if (!nameTrim) {
+      e.name = 'Pet name is required';
+    } else if (nameTrim.length < 2) {
+      e.name = 'Pet name must be at least 2 characters';
+    }
+
+    if (!form.species) {
+      e.species = 'Please select a species';
+    }
+
+    if (form.age !== '') {
+      const numAge = Number(form.age);
+      if (isNaN(numAge) || numAge < 0 || numAge > 50) {
+        e.age = 'Age must be a valid number between 0 and 50';
+      }
+    }
+
+    if (form.weight !== '') {
+      const numWeight = Number(form.weight);
+      if (isNaN(numWeight) || numWeight <= 0 || numWeight > 300) {
+        e.weight = 'Weight must be a positive number in kg (e.g. 14.5)';
+      }
+    }
+
+    if (form.dob) {
+      const parsedDob = new Date(form.dob);
+      if (parsedDob > new Date()) {
+        e.dob = 'Date of birth cannot be in the future';
+      }
+    }
+
+    if (form.image && form.image.trim()) {
+      if (!/^https?:\/\/.+/i.test(form.image.trim())) {
+        e.image = 'Image URL must start with http:// or https://';
+      }
+    }
+
     setErrs(e);
     return Object.keys(e).length === 0;
   };
@@ -141,6 +204,7 @@ export default function PetForm({ initialData = null, onSubmit, onCancel, isLoad
         ? form.allergies.split(',').map((s) => s.trim()).filter(Boolean)
         : [],
       medicalHistory: form.medicalHistory.trim() || undefined,
+      images:         form.image ? [form.image.trim()] : [],
     };
 
     onSubmit(payload);
@@ -148,6 +212,64 @@ export default function PetForm({ initialData = null, onSubmit, onCancel, isLoad
 
   return (
     <form onSubmit={handleSubmit} noValidate>
+
+      {/* ── Pet Photo ── */}
+      <SectionTitle>Pet Photo</SectionTitle>
+      <div className="mb-5 p-4 rounded-xl border border-[#E8E2D9] bg-primary-50/50 flex flex-col sm:flex-row gap-4 items-center">
+        <div className="w-20 h-20 rounded-2xl bg-white border border-[#E8E2D9] flex items-center justify-center text-4xl overflow-hidden flex-shrink-0 shadow-inner">
+          {form.image ? (
+            <img src={form.image} alt="Pet Preview" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none'; }} />
+          ) : (
+            <span>{SPECIES.find(s => s.value === form.species)?.emoji || '🐾'}</span>
+          )}
+        </div>
+        <div className="flex-1 w-full space-y-2">
+          <label className="text-xs font-semibold text-body block">Photo URL</label>
+          <div className="flex gap-2">
+            <input
+              type="url"
+              value={form.image}
+              onChange={(e) => setForm(p => ({ ...p, image: e.target.value }))}
+              placeholder="Paste image URL (https://...)"
+              className={`flex-1 rounded-xl px-3 py-2 text-xs text-body placeholder-[#8A8279] focus:outline-none transition-all ${
+                errors.image
+                  ? 'border border-[#B87A74] bg-[#FDF7F7] focus:border-[#8C4238]'
+                  : 'bg-white border border-[#E8E2D9] focus:border-primary-500'
+              }`}
+            />
+            {form.image && (
+              <button
+                type="button"
+                onClick={() => setForm(p => ({ ...p, image: '' }))}
+                className="px-2.5 py-1 text-xs text-[#8C4238] border border-red-200 rounded-xl hover:bg-red-50"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+          {errors.image && (
+            <p className="text-xs text-[#8C4238] flex items-center gap-1 mt-1">
+              <span>⚠️</span> {errors.image}
+            </p>
+          )}
+          <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+            <span className="text-[11px] text-muted">Or quick preset:</span>
+            {SAMPLE_AVATARS.map((s) => (
+              <button
+                key={s.label}
+                type="button"
+                onClick={() => {
+                  setForm(p => ({ ...p, image: s.url }));
+                  if (errors.image) setErrs(p => { const next = { ...p }; delete next.image; return next; });
+                }}
+                className="text-[10px] px-2 py-0.5 rounded-lg bg-white border border-[#E8E2D9] text-body hover:border-primary-500 hover:text-primary-700 transition-all"
+              >
+                {s.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* ── Basic Info ── */}
       <SectionTitle>Basic Information</SectionTitle>
@@ -159,7 +281,10 @@ export default function PetForm({ initialData = null, onSubmit, onCancel, isLoad
             <button
               key={s.value}
               type="button"
-              onClick={() => setForm((p) => ({ ...p, species: s.value }))}
+              onClick={() => {
+                setForm((p) => ({ ...p, species: s.value }));
+                if (errors.species) setErrs(p => { const next = { ...p }; delete next.species; return next; });
+              }}
               className={`flex flex-col items-center gap-1 p-3 rounded-xl border text-center
                 transition-all duration-200 hover:scale-105
                 ${form.species === s.value
@@ -176,7 +301,7 @@ export default function PetForm({ initialData = null, onSubmit, onCancel, isLoad
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
         <Field label="Pet Name" required error={errors.name}>
-          <TextInput value={form.name} onChange={set('name')} placeholder="Buddy, Luna, Max…" />
+          <TextInput value={form.name} onChange={set('name')} placeholder="Buddy, Luna, Max…" error={errors.name} />
         </Field>
 
         <Field label="Breed">
@@ -184,15 +309,15 @@ export default function PetForm({ initialData = null, onSubmit, onCancel, isLoad
         </Field>
 
         <Field label="Age (years)" error={errors.age}>
-          <TextInput value={form.age} onChange={set('age')} placeholder="e.g. 3" type="number" min="0" step="0.5" />
+          <TextInput value={form.age} onChange={set('age')} placeholder="e.g. 3" type="number" min="0" step="0.5" error={errors.age} />
         </Field>
 
-        <Field label="Date of Birth">
-          <TextInput value={form.dob} onChange={set('dob')} type="date" />
+        <Field label="Date of Birth" error={errors.dob}>
+          <TextInput value={form.dob} onChange={set('dob')} type="date" error={errors.dob} />
         </Field>
 
         <Field label="Weight (kg)" error={errors.weight}>
-          <TextInput value={form.weight} onChange={set('weight')} placeholder="e.g. 8.5" type="number" min="0" step="0.1" />
+          <TextInput value={form.weight} onChange={set('weight')} placeholder="e.g. 8.5" type="number" min="0" step="0.1" error={errors.weight} />
         </Field>
 
         <Field label="Color / Markings">

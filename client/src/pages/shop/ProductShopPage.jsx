@@ -94,69 +94,208 @@ function ProductCard({ product, onAddToCart, isAdding }) {
 // ── Cart sidebar ──────────────────────────────────────────────────────────────
 function CartPanel({ cart, onClose, onRemove, onUpdateQty, onPlaceOrder, isOrdering }) {
   const total = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
+  const [checkoutMode, setCheckoutMode] = useState(false);
+  const [delivery, setDelivery] = useState({ name: '', phone: '', address: '', notes: '' });
+  const [errors, setErrors] = useState({});
+
+  const validateDelivery = () => {
+    const errs = {};
+    if (!delivery.name.trim()) {
+      errs.name = 'Recipient name is required';
+    } else if (delivery.name.trim().length < 2) {
+      errs.name = 'Name must be at least 2 characters';
+    }
+
+    if (!delivery.phone.trim()) {
+      errs.phone = 'Contact phone number is required';
+    } else if (!/^[0-9+ -]{10,15}$/.test(delivery.phone.trim())) {
+      errs.phone = 'Please enter a valid 10-digit phone number';
+    }
+
+    if (!delivery.address.trim()) {
+      errs.address = 'Delivery address is required';
+    } else if (delivery.address.trim().length < 6) {
+      errs.address = 'Please provide a full delivery address';
+    }
+
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleConfirmOrder = () => {
+    if (!validateDelivery()) return;
+    const notesSummary = `Deliver to: ${delivery.name} | Phone: ${delivery.phone} | Address: ${delivery.address} ${delivery.notes ? `| Note: ${delivery.notes}` : ''}`;
+    onPlaceOrder(notesSummary);
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <div className="absolute inset-0 bg-page/70 backdrop-blur-sm" onClick={onClose} />
       <div className="relative w-full max-w-sm bg-panel border-l border-[#E8E2D9] flex flex-col animate-slide-up overflow-hidden">
         <div className="flex items-center justify-between px-5 py-4 border-b border-[#E8E2D9]">
-          <h2 className="text-lg font-heading font-semibold text-strong">🛒 Cart ({cart.length})</h2>
+          <h2 className="text-lg font-heading font-semibold text-strong">
+            {checkoutMode ? '📦 Delivery Details' : `🛒 Cart (${cart.length})`}
+          </h2>
           <button onClick={onClose} className="text-muted hover:text-body text-xl transition-colors">×</button>
         </div>
 
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-          {cart.length === 0 && (
-            <div className="text-center py-16">
-              <p className="text-4xl mb-3 opacity-40">🛒</p>
-              <p className="text-muted text-sm">Your cart is empty</p>
+          {!checkoutMode ? (
+            <>
+              {cart.length === 0 && (
+                <div className="text-center py-16">
+                  <p className="text-4xl mb-3 opacity-40">🛒</p>
+                  <p className="text-muted text-sm">Your cart is empty</p>
+                </div>
+              )}
+              {cart.map((item) => (
+                <div key={item._id} className="flex items-start gap-3 p-3 bg-primary-50 rounded-xl border border-[#E8E2D9]">
+                  <div className="w-12 h-12 rounded-xl bg-white border border-[#E8E2D9] flex items-center justify-center text-2xl flex-shrink-0 overflow-hidden">
+                    {item.product.images?.[0]
+                      ? <img src={item.product.images[0]} alt="" className="w-full h-full object-cover rounded-xl" />
+                      : '🛍️'
+                    }
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-strong text-sm font-semibold truncate">{item.product.name}</p>
+                    <p className="text-primary-700 text-sm font-bold">₹{item.product.price}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <button onClick={() => onUpdateQty(item._id, Math.max(1, item.quantity - 1))}
+                        className="w-6 h-6 rounded-lg bg-white border border-[#E8E2D9] text-body hover:bg-primary-50 transition-all text-sm font-bold flex items-center justify-center">
+                        −
+                      </button>
+                      <span className="text-strong text-sm font-bold w-5 text-center">{item.quantity}</span>
+                      <button onClick={() => onUpdateQty(item._id, item.quantity + 1)}
+                        className="w-6 h-6 rounded-lg bg-white border border-[#E8E2D9] text-body hover:bg-primary-50 transition-all text-sm font-bold flex items-center justify-center">
+                        +
+                      </button>
+                    </div>
+                  </div>
+                  <button onClick={() => onRemove(item._id)}
+                    className="text-subtle hover:text-[#8C4238] transition-colors text-lg">×</button>
+                </div>
+              ))}
+            </>
+          ) : (
+            <div className="space-y-3.5">
+              <div className="bg-primary-50 p-3 rounded-xl border border-primary-200 text-xs text-primary-800 flex items-center gap-2">
+                <span>🚚</span> Cash on Delivery / Free Clinic Pickup
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-body block mb-1">
+                  Recipient Name <span className="text-[#8C4238] font-bold">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={delivery.name}
+                  onChange={(e) => {
+                    setDelivery(p => ({ ...p, name: e.target.value }));
+                    if (errors.name) setErrors(p => { const n = { ...p }; delete n.name; return n; });
+                  }}
+                  placeholder="e.g. Rahul Sharma"
+                  className={`w-full rounded-xl px-3.5 py-2 text-xs text-body placeholder-[#8A8279] focus:outline-none transition-all ${
+                    errors.name ? 'border border-[#B87A74] bg-[#FDF7F7] focus:border-[#8C4238]' : 'border border-[#E8E2D9] bg-white focus:border-primary-500'
+                  }`}
+                />
+                {errors.name && (
+                  <p className="text-[11px] text-[#8C4238] flex items-center gap-1 mt-1"><span>⚠️</span> {errors.name}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-body block mb-1">
+                  Contact Phone <span className="text-[#8C4238] font-bold">*</span>
+                </label>
+                <input
+                  type="tel"
+                  value={delivery.phone}
+                  onChange={(e) => {
+                    setDelivery(p => ({ ...p, phone: e.target.value }));
+                    if (errors.phone) setErrors(p => { const n = { ...p }; delete n.phone; return n; });
+                  }}
+                  placeholder="e.g. 98100 12345"
+                  className={`w-full rounded-xl px-3.5 py-2 text-xs text-body placeholder-[#8A8279] focus:outline-none transition-all ${
+                    errors.phone ? 'border border-[#B87A74] bg-[#FDF7F7] focus:border-[#8C4238]' : 'border border-[#E8E2D9] bg-white focus:border-primary-500'
+                  }`}
+                />
+                {errors.phone && (
+                  <p className="text-[11px] text-[#8C4238] flex items-center gap-1 mt-1"><span>⚠️</span> {errors.phone}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-body block mb-1">
+                  Delivery Address <span className="text-[#8C4238] font-bold">*</span>
+                </label>
+                <textarea
+                  rows={2}
+                  value={delivery.address}
+                  onChange={(e) => {
+                    setDelivery(p => ({ ...p, address: e.target.value }));
+                    if (errors.address) setErrors(p => { const n = { ...p }; delete n.address; return n; });
+                  }}
+                  placeholder="Apartment, Street name, City, PIN code"
+                  className={`w-full rounded-xl px-3.5 py-2 text-xs text-body placeholder-[#8A8279] focus:outline-none transition-all resize-none ${
+                    errors.address ? 'border border-[#B87A74] bg-[#FDF7F7] focus:border-[#8C4238]' : 'border border-[#E8E2D9] bg-white focus:border-primary-500'
+                  }`}
+                />
+                {errors.address && (
+                  <p className="text-[11px] text-[#8C4238] flex items-center gap-1 mt-1"><span>⚠️</span> {errors.address}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold text-body block mb-1">Order Notes (optional)</label>
+                <input
+                  type="text"
+                  value={delivery.notes}
+                  onChange={(e) => setDelivery(p => ({ ...p, notes: e.target.value }))}
+                  placeholder="e.g. Call before delivery, leave with guard"
+                  className="w-full rounded-xl px-3.5 py-2 text-xs text-body placeholder-[#8A8279] border border-[#E8E2D9] bg-white focus:outline-none focus:border-primary-500"
+                />
+              </div>
             </div>
           )}
-          {cart.map((item) => (
-            <div key={item._id} className="flex items-start gap-3 p-3 bg-primary-50 rounded-xl border border-[#E8E2D9]">
-              <div className="w-12 h-12 rounded-xl [#EEEAE4] flex items-center justify-center text-2xl flex-shrink-0">
-                {item.product.images?.[0]
-                  ? <img src={item.product.images[0]} alt="" className="w-full h-full object-cover rounded-xl" />
-                  : '🛍️'
-                }
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-strong text-sm font-semibold truncate">{item.product.name}</p>
-                <p className="text-primary-700 text-sm font-bold">₹{item.product.price}</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <button onClick={() => onUpdateQty(item._id, Math.max(1, item.quantity - 1))}
-                    className="w-6 h-6 rounded-lg bg-white border border-[#E8E2D9] text-body hover:bg-primary-50 transition-all text-sm font-bold flex items-center justify-center">
-                    −
-                  </button>
-                  <span className="text-strong text-sm font-bold w-5 text-center">{item.quantity}</span>
-                  <button onClick={() => onUpdateQty(item._id, item.quantity + 1)}
-                    className="w-6 h-6 rounded-lg bg-white border border-[#E8E2D9] text-body hover:bg-primary-50 transition-all text-sm font-bold flex items-center justify-center">
-                    +
-                  </button>
-                </div>
-              </div>
-              <button onClick={() => onRemove(item._id)}
-                className="text-subtle hover:text-[#8C4238] transition-colors text-lg">×</button>
-            </div>
-          ))}
         </div>
 
         {cart.length > 0 && (
           <div className="px-5 py-4 border-t border-[#E8E2D9]">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-muted">Total</span>
+              <span className="text-muted text-sm">Order Total ({cart.reduce((s, i) => s + i.quantity, 0)} items)</span>
               <span className="text-strong font-black text-xl heading-gradient">₹{total.toFixed(2)}</span>
             </div>
-            <p className="text-xs text-subtle mb-3 text-center">
-              ℹ️ No online payment — order placed for cash-on-delivery or in-store pickup.
-            </p>
-            <button onClick={onPlaceOrder} disabled={isOrdering}
-              id="place-order-btn"
-              className="btn-primary w-full justify-center disabled:opacity-50">
-              {isOrdering
-                ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Placing Order…</>
-                : '✓ Place Order'
-              }
-            </button>
+
+            {!checkoutMode ? (
+              <button
+                onClick={() => setCheckoutMode(true)}
+                id="proceed-checkout-btn"
+                className="btn-primary w-full justify-center text-sm py-2.5"
+              >
+                Proceed to Checkout →
+              </button>
+            ) : (
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setCheckoutMode(false)}
+                  className="px-4 py-2 text-xs rounded-xl border border-[#E8E2D9] text-body hover:bg-white transition-all font-semibold"
+                >
+                  ← Edit Cart
+                </button>
+                <button
+                  onClick={handleConfirmOrder}
+                  disabled={isOrdering}
+                  id="place-order-btn"
+                  className="btn-primary flex-1 justify-center text-sm py-2.5 disabled:opacity-50"
+                >
+                  {isOrdering
+                    ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Placing Order…</>
+                    : '✓ Confirm & Place Order'
+                  }
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -221,10 +360,10 @@ export default function ProductShopPage() {
     try { await OrderService.updateItem(itemId, { quantity: qty }); await fetchCart(); } catch {}
   };
 
-  const handlePlaceOrder = async () => {
+  const handlePlaceOrder = async (notes) => {
     setIsOrdering(true);
     try {
-      await OrderService.placeOrder({});
+      await OrderService.placeOrder({ notes });
       await fetchCart();
       setCartOpen(false);
       setOrderOk(true);

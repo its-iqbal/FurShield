@@ -1,4 +1,4 @@
-﻿/**
+/**
  * components/layout/DashboardLayout.jsx
  * Unified sidebar + topbar layout. Warm, clinical-but-gentle palette per DESIGN.md.
  * Sidebar uses bg-panel (#F1F5F1) on a bg-page (#FBF7F0) canvas.
@@ -40,7 +40,7 @@ const BOTTOM_NAV = [
 // ── NavItem ───────────────────────────────────────────────────────────────────
 function NavItem({ to, icon, label, collapsed, unread }) {
   const location = useLocation();
-  const isActive = location.pathname === to || location.pathname.startsWith(to + '/');
+  const isActive = location.pathname === to || (to !== '/dashboard' && to !== '/' && location.pathname.startsWith(to + '/'));
 
   return (
     <Link

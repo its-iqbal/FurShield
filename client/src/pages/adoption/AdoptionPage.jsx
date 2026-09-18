@@ -66,13 +66,37 @@ function ListingCard({ listing, onViewDetail }) {
 // ── Detail + interest form modal ──────────────────────────────────────────────
 function ListingDetail({ listing, onSubmitInterest, isSubmitting, submitted }) {
   const [form, setForm] = useState({ message: '', experience: '', livingSpace: '' });
+  const [errors, setErrors] = useState({});
   const emoji = SPECIES_EMOJI[listing.species] ?? '🐾';
+
+  const validate = () => {
+    const errs = {};
+    if (!form.message.trim()) {
+      errs.message = 'Please share why you wish to adopt this pet.';
+    } else if (form.message.trim().length < 8) {
+      errs.message = 'Please provide a bit more detail (at least 8 characters).';
+    }
+    if (!form.livingSpace.trim()) {
+      errs.livingSpace = 'Please describe your home / living environment.';
+    }
+    if (!form.experience.trim()) {
+      errs.experience = 'Please note your previous pet experience.';
+    }
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!validate()) return;
+    onSubmitInterest(listing._id, form);
+  };
 
   if (submitted) return (
     <div className="text-center py-8 animate-fade-in">
       <p className="text-5xl mb-4">🎉</p>
-      <h3 className="text-xl font-black text-body mb-2">Interest Submitted!</h3>
-      <p className="text-muted text-sm">The shelter will review your request and contact you soon.</p>
+      <h3 className="text-xl font-heading font-bold text-strong mb-2">Adoption Interest Submitted!</h3>
+      <p className="text-muted text-sm">The shelter has received your application and will review your profile shortly.</p>
     </div>
   );
 
@@ -80,7 +104,7 @@ function ListingDetail({ listing, onSubmitInterest, isSubmitting, submitted }) {
     <div className="animate-fade-in">
       {/* Pet header */}
       <div className="flex items-center gap-4 mb-5">
-        <div className="w-16 h-16 rounded-2xl [#EEEAE4] flex items-center justify-center text-4xl border border-[#E8E2D9] flex-shrink-0">
+        <div className="w-16 h-16 rounded-2xl bg-primary-100 flex items-center justify-center text-4xl border border-[#E8E2D9] overflow-hidden flex-shrink-0">
           {listing.images?.[0]
             ? <img src={listing.images[0]} alt={listing.name} className="w-full h-full object-cover rounded-2xl" />
             : emoji}
@@ -121,31 +145,48 @@ function ListingDetail({ listing, onSubmitInterest, isSubmitting, submitted }) {
 
       {/* Interest form */}
       {listing.status === 'available' && (
-        <div className="border-t border-[#E8E2D9] pt-5">
-          <h3 className="text-strong font-bold mb-4">💌 Express Adoption Interest</h3>
-          <div className="space-y-3">
+        <form onSubmit={handleSubmit} className="border-t border-[#E8E2D9] pt-5 space-y-4">
+          <h3 className="text-strong font-heading font-semibold text-base mb-1">💌 Express Adoption Interest</h3>
+          <p className="text-xs text-muted mb-3">Help the shelter understand your readiness to adopt {listing.name}.</p>
+          
+          <div className="space-y-3.5">
             {[
-              { key: 'message',      label: 'Why do you want to adopt?',            placeholder: "Tell the shelter why you'd be a great match…" },
-              { key: 'experience',   label: 'Pet ownership experience',             placeholder: 'e.g. First-time owner, have had cats for 5 years…' },
-              { key: 'livingSpace',  label: 'Your living environment',              placeholder: 'e.g. 2BHK apartment, house with garden, ground floor…' },
+              { key: 'message',      label: 'Why do you want to adopt?',  placeholder: "Tell the shelter why you'd be a great match…" },
+              { key: 'experience',   label: 'Pet ownership experience',   placeholder: 'e.g. First-time owner, have cared for dogs for 5 years…' },
+              { key: 'livingSpace',  label: 'Your living environment',    placeholder: 'e.g. 2BHK apartment, fenced house, ground floor…' },
             ].map(({ key, label, placeholder }) => (
               <div key={key}>
-                <label className="text-sm font-medium text-body block mb-1.5">{label}</label>
-                <textarea value={form[key]} onChange={(e) => setForm(p => ({ ...p, [key]: e.target.value }))}
-                  placeholder={placeholder} rows={2}
-                  className="w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body
-                    placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500 resize-none transition-all" />
+                <label className="text-xs font-semibold text-body block mb-1">
+                  {label} <span className="text-[#8C4238] font-bold">*</span>
+                </label>
+                <textarea
+                  value={form[key]}
+                  onChange={(e) => {
+                    setForm(p => ({ ...p, [key]: e.target.value }));
+                    if (errors[key]) setErrors(p => ({ ...p, [key]: null }));
+                  }}
+                  placeholder={placeholder}
+                  rows={2}
+                  className={`w-full rounded-xl px-4 py-2.5 text-body
+                    placeholder-[#8A8279] text-xs focus:outline-none transition-all resize-none
+                    ${errors[key] ? 'border border-[#B87A74] bg-[#FDF7F7] focus:border-[#8C4238]' : 'border border-[#E8E2D9] bg-white focus:border-primary-500'}`}
+                />
+                {errors[key] && <p className="text-xs text-[#8C4238] mt-0.5 font-medium">⚠️ {errors[key]}</p>}
               </div>
             ))}
           </div>
-          <button onClick={() => onSubmitInterest(listing._id, form)} disabled={isSubmitting || !form.message.trim()}
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
             id="submit-adoption-interest-btn"
-            className="btn-primary w-full justify-center mt-4 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0">
+            className="btn-primary w-full justify-center mt-2 disabled:opacity-50"
+          >
             {isSubmitting
               ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Submitting…</>
-              : '🐾 Submit Adoption Interest'}
+              : '🐾 Submit Adoption Application'}
           </button>
-        </div>
+        </form>
       )}
     </div>
   );

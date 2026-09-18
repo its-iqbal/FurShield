@@ -24,7 +24,7 @@ export const submitInterest = asyncHandler(async (req, res, next) => {
     livingSpace:   req.body.livingSpace,
     hasPets:       req.body.hasPets,
     hasChildren:   req.body.hasChildren,
-    experienceNote:req.body.experienceNote,
+    experienceNote:req.body.experienceNote || req.body.experience,
   });
 
   // Notify shelter
@@ -83,7 +83,9 @@ export const getShelterInterests = asyncHandler(async (req, res) => {
 
   const mapped = interests.map((i) => {
     const obj = i.toObject({ virtuals: true });
-    if (!obj.owner && obj.applicant) obj.owner = obj.applicant;
+    obj.user = obj.applicant || null;
+    obj.owner = obj.applicant || null;
+    obj.pet = obj.listing || null;
     if (obj.listing && !obj.listing.name && obj.listing.petName) {
       obj.listing.name = obj.listing.petName;
     }

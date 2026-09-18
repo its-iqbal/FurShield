@@ -161,6 +161,7 @@ function StepSchedule({ selectedDate, selectedTime, onDateChange, onTimeChange, 
 
 // ── Step 4: Reason + confirm ──────────────────────────────────────────────────
 function StepDetails({ form, onChange, selectedPet, selectedVet, selectedDate, selectedTime, onBack, onSubmit, isLoading, apiError }) {
+  const [touched, setTouched] = useState(false);
   const displayDate = selectedDate
     ? new Date(selectedDate).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
     : '';
@@ -170,6 +171,15 @@ function StepDetails({ form, onChange, selectedPet, selectedVet, selectedDate, s
     const [h, m] = t.split(':').map(Number);
     return `${h % 12 || 12}:${String(m).padStart(2,'0')} ${h >= 12 ? 'PM' : 'AM'}`;
   }
+
+  const reasonTrimmed = form.reason?.trim() || '';
+  const reasonError = touched && (!reasonTrimmed ? 'Reason for visit is required' : reasonTrimmed.length < 3 ? 'Reason must be at least 3 characters' : null);
+
+  const handleConfirm = () => {
+    setTouched(true);
+    if (!reasonTrimmed || reasonTrimmed.length < 3) return;
+    onSubmit();
+  };
 
   return (
     <div className="animate-fade-in">
@@ -205,18 +215,26 @@ function StepDetails({ form, onChange, selectedPet, selectedVet, selectedDate, s
       {/* Reason */}
       <div className="mb-4">
         <label className="text-sm font-medium text-body mb-1.5 block">
-          Reason for Visit <span className="text-primary-400">*</span>
+          Reason for Visit <span className="text-[#8C4238] font-bold">*</span>
         </label>
         <input
           type="text"
           id="appt-reason"
           value={form.reason}
+          onBlur={() => setTouched(true)}
           onChange={(e) => onChange('reason', e.target.value)}
           placeholder="e.g. Limping, Annual check-up, Skin irritation, Vaccination"
-          className="w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body
-            placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500
-            focus:ring-2 focus:ring-primary-500/20 transition-all"
+          className={`w-full rounded-xl px-4 py-2.5 text-body placeholder-[#8A8279] text-sm transition-all duration-200 focus:outline-none focus:ring-2 ${
+            reasonError
+              ? 'border border-[#B87A74] bg-[#FDF7F7] focus:border-[#8C4238] focus:ring-[#8C4238]/20'
+              : 'border border-[#E8E2D9] bg-white focus:border-primary-500 focus:ring-primary-500/20'
+          }`}
         />
+        {reasonError && (
+          <p className="text-xs text-[#8C4238] flex items-center gap-1 mt-1.5">
+            <span>⚠️</span> {reasonError}
+          </p>
+        )}
       </div>
 
       {/* Notes */}
@@ -230,9 +248,7 @@ function StepDetails({ form, onChange, selectedPet, selectedVet, selectedDate, s
           onChange={(e) => onChange('notes', e.target.value)}
           rows={3}
           placeholder="Any additional context for the vet — symptoms, medications, recent changes…"
-          className="w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body
-            placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500
-            focus:ring-2 focus:ring-primary-500/20 transition-all resize-none"
+          className="w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all resize-none"
         />
       </div>
 
@@ -241,9 +257,9 @@ function StepDetails({ form, onChange, selectedPet, selectedVet, selectedDate, s
         <button
           type="button"
           id="wizard-submit-booking"
-          disabled={!form.reason.trim() || isLoading}
-          onClick={onSubmit}
-          className="btn-primary flex-1 justify-center disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+          disabled={isLoading}
+          onClick={handleConfirm}
+          className="btn-primary flex-1 justify-center disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
         >
           {isLoading
             ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Booking…</>

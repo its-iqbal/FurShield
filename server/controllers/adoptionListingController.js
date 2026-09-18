@@ -18,7 +18,11 @@ const ownListing = async (listingId, shelterId, next) => {
  */
 export const createListing = asyncHandler(async (req, res) => {
   const petName = req.body.petName || req.body.name;
-  const listing = await AdoptionListing.create({ ...req.body, petName, shelter: req.user._id });
+  let images = Array.isArray(req.body.images) ? [...req.body.images] : [];
+  if (req.body.image && !images.includes(req.body.image)) {
+    images = [req.body.image, ...images];
+  }
+  const listing = await AdoptionListing.create({ ...req.body, petName, images, shelter: req.user._id });
   sendResponse(res, 201, listing, 'Adoption listing created');
 });
 
@@ -97,6 +101,12 @@ export const updateListing = asyncHandler(async (req, res, next) => {
 
   const forbidden = ['shelter', '_id', 'careLogs'];
   for (const key of forbidden) delete req.body[key];
+
+  if (req.body.name && !req.body.petName) req.body.petName = req.body.name;
+  if (req.body.image) {
+    req.body.images = [req.body.image];
+    delete req.body.image;
+  }
 
   Object.assign(listing, req.body);
   await listing.save({ runValidators: true });

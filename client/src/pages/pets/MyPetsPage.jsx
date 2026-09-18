@@ -1,44 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import DashboardLayout from '../../components/layout/DashboardLayout.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import usePets from '../../hooks/usePets.js';
 import Modal from '../../components/ui/Modal.jsx';
 import PetForm from '../../components/pets/PetForm.jsx';
 import DeleteConfirm from '../../components/pets/DeleteConfirm.jsx';
 import { PetTab, PetDetailCard } from '../../components/pets/PetCard.jsx';
-
-// ── Sub-components ─────────────────────────────────────────────────────────────
-
-function DashboardNavbar({ user, onLogout }) {
-  return (
-    <header className="border-b border-[#E8E2D9] px-6 py-4 flex items-center justify-between sticky top-0 z-30 bg-page/95 backdrop-blur-md">
-      <div className="flex items-center gap-6">
-        <Link to="/" className="flex items-center gap-2">
-          <span className="text-xl">🐾</span>
-          <span className="font-semibold gradient-text text-lg">FurShield</span>
-        </Link>
-        {/* Breadcrumb */}
-        <div className="hidden md:flex items-center gap-2 text-sm text-muted">
-          <Link to="/dashboard" className="hover:text-body transition-colors">Dashboard</Link>
-          <span>/</span>
-          <span className="text-body">My Pets</span>
-        </div>
-      </div>
-
-      <div className="flex items-center gap-4">
-        <span className="hidden sm:block text-sm text-muted">
-          Hi, <span className="text-body">{user?.name?.split(' ')[0]}</span> 👋
-        </span>
-        <button
-          onClick={onLogout}
-          className="text-xs text-subtle hover:text-[#8C4238] transition-colors"
-        >
-          Sign out
-        </button>
-      </div>
-    </header>
-  );
-}
 
 function EmptyPets({ onAdd }) {
   return (
@@ -149,16 +117,12 @@ export default function MyPetsPage() {
   const openEdit = () => { setFormError(null); setShowEdit(true); };
 
   return (
-    <div className="min-h-screen bg-page text-body">
-
-      {/* ── Navbar ── */}
-      <DashboardNavbar user={user} onLogout={logout} />
-
+    <DashboardLayout pageTitle="My Pets 🐾">
       {/* ── Error banner ── */}
       {error && <ErrorBanner message={error} onRetry={fetchPets} />}
 
       {/* ── Page content ── */}
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
 
         {/* Page header */}
         <div className="flex items-center justify-between mb-8">
@@ -255,7 +219,7 @@ export default function MyPetsPage() {
             </div>
           </div>
         )}
-      </main>
+      </div>
 
       {/* ── Add Pet Modal ── */}
       <Modal
@@ -310,6 +274,6 @@ export default function MyPetsPage() {
           isLoading={formLoading}
         />
       </Modal>
-    </div>
+    </DashboardLayout>
   );
 }

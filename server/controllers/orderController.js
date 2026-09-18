@@ -130,6 +130,7 @@ export const placeOrder = asyncHandler(async (req, res, next) => {
   }
 
   cart.status = 'placed';
+  if (req.body.notes) cart.notes = req.body.notes;
   await cart.save();
 
   sendResponse(res, 200, cart, 'Order placed successfully');

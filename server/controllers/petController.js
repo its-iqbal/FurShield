@@ -20,7 +20,11 @@ const ownPet = async (petId, ownerId, next) => {
  * Add a new pet. Only petOwners can call this.
  */
 export const addPet = asyncHandler(async (req, res) => {
-  const pet = await Pet.create({ ...req.body, owner: req.user._id });
+  let images = Array.isArray(req.body.images) ? [...req.body.images] : [];
+  if (req.body.image && !images.includes(req.body.image)) {
+    images = [req.body.image, ...images];
+  }
+  const pet = await Pet.create({ ...req.body, images, owner: req.user._id });
   sendResponse(res, 201, pet, 'Pet added successfully');
 });
 
@@ -66,6 +70,11 @@ export const updatePet = asyncHandler(async (req, res, next) => {
 
   const forbidden = ['owner', '_id'];
   for (const key of forbidden) delete req.body[key];
+
+  if (req.body.image) {
+    req.body.images = [req.body.image];
+    delete req.body.image;
+  }
 
   Object.assign(pet, req.body);
   await pet.save({ runValidators: true });

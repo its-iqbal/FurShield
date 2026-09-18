@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 
@@ -317,7 +317,16 @@ export default function RegisterPage() {
 
   useEffect(() => { if (apiError) clearError(); }, [form]);
 
-  const handleChange = (field, value) => setForm((p) => ({ ...p, [field]: value }));
+  const handleChange = (field, value) => {
+    setForm((p) => ({ ...p, [field]: value }));
+    if (errors[field]) {
+      setErrors((p) => {
+        const next = { ...p };
+        delete next[field];
+        return next;
+      });
+    }
+  };
 
   const validateStep2 = () => {
     const errs = {};

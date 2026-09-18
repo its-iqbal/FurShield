@@ -1,288 +1,330 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../components/layout/DashboardLayout.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
 import AdoptionService from '../../api/adoptionService.js';
-import Modal from '../../components/ui/Modal.jsx';
 
-const SPECIES_EMOJI = { dog:'🐕', cat:'🐱', bird:'🦜', rabbit:'🐰', reptile:'🦎', fish:'🐠', other:'🐾' };
-const SPECIES = ['dog','cat','bird','rabbit','reptile','fish','other'];
+const SPECIES_EMOJI = { dog: '🐕', cat: '🐱', bird: '🦜', rabbit: '🐰', reptile: '🦎', fish: '🐠', other: '🐾' };
 
-const inputCls = `w-full bg-white border border-[#E8E2D9] rounded-xl px-4 py-2.5 text-body
-  placeholder-[#8A8279] text-sm focus:outline-none focus:border-primary-500 transition-all`;
-
-// ── Add/Edit listing form ─────────────────────────────────────────────────────
-function ListingForm({ initial, onSave, onCancel, isSaving }) {
-  const [form, setForm] = useState({
-    name: '', species: 'dog', breed: '', age: '', gender: 'unknown',
-    color: '', description: '', isVaccinated: false, isNeutered: false,
-    isHouseTrained: false, status: 'available',
-    ...(initial ?? {}),
-  });
-  const set  = (k) => (e) => setForm(p => ({ ...p, [k]: e.target.value }));
-  const setB = (k) => (e) => setForm(p => ({ ...p, [k]: e.target.checked }));
-
-  return (
-    <form onSubmit={(e) => { e.preventDefault(); onSave(form); }} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm text-body block mb-1">Pet Name *</label>
-          <input value={form.name} onChange={set('name')} required placeholder="e.g. Brownie" className={inputCls} />
-        </div>
-        <div>
-          <label className="text-sm text-body block mb-1">Species *</label>
-          <select value={form.species} onChange={set('species')} className={inputCls}>
-            {SPECIES.map(s => <option key={s} value={s} className="bg-panel capitalize">{s}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className="text-sm text-body block mb-1">Breed</label>
-          <input value={form.breed} onChange={set('breed')} placeholder="e.g. Labrador" className={inputCls} />
-        </div>
-        <div>
-          <label className="text-sm text-body block mb-1">Age</label>
-          <input value={form.age} onChange={set('age')} placeholder="e.g. 2 years" className={inputCls} />
-        </div>
-        <div>
-          <label className="text-sm text-body block mb-1">Gender</label>
-          <select value={form.gender} onChange={set('gender')} className={inputCls}>
-            {['male','female','unknown'].map(g => <option key={g} value={g} className="bg-panel capitalize">{g}</option>)}
-          </select>
-        </div>
-        <div>
-          <label className="text-sm text-body block mb-1">Color</label>
-          <input value={form.color} onChange={set('color')} placeholder="e.g. Golden brown" className={inputCls} />
-        </div>
-        <div>
-          <label className="text-sm text-body block mb-1">Status</label>
-          <select value={form.status} onChange={set('status')} className={inputCls}>
-            {['available','pending','adopted'].map(s => <option key={s} value={s} className="bg-panel capitalize">{s}</option>)}
-          </select>
-        </div>
-      </div>
-      <div>
-        <label className="text-sm text-body block mb-1">Description</label>
-        <textarea value={form.description} onChange={set('description')} rows={3}
-          placeholder="Tell potential adopters about this pet's personality…"
-          className={`${inputCls} resize-none`} />
-      </div>
-      <div className="flex flex-wrap gap-4">
-        {[
-          { key: 'isVaccinated',   label: '💉 Vaccinated'    },
-          { key: 'isNeutered',     label: '✂️ Neutered'       },
-          { key: 'isHouseTrained', label: '🏠 House Trained'  },
-        ].map(({ key, label }) => (
-          <label key={key} className="flex items-center gap-2 cursor-pointer text-sm text-body">
-            <input type="checkbox" checked={form[key]} onChange={setB(key)} className="w-4 h-4 accent-primary-500" />
-            {label}
-          </label>
-        ))}
-      </div>
-      <div className="flex gap-3 pt-2">
-        <button type="button" onClick={onCancel} className="btn-outline flex-shrink-0 px-5 text-sm">Cancel</button>
-        <button type="submit" disabled={isSaving} className="btn-primary flex-1 justify-center text-sm disabled:opacity-50">
-          {isSaving ? <><span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Saving…</> : '✓ Save Listing'}
-        </button>
-      </div>
-    </form>
-  );
-}
-
-// ── Interest card ─────────────────────────────────────────────────────────────
-function InterestCard({ interest, onApprove, onReject }) {
-  return (
-    <div className="p-4 rounded-xl border border-[#E8E2D9] bg-primary-50">
-      <div className="flex items-start justify-between gap-3 mb-3">
-        <div>
-          <p className="text-strong font-bold text-sm">{interest.owner?.name ?? 'Applicant'}</p>
-          <p className="text-muted text-xs">{interest.owner?.email}</p>
-          <p className="text-muted text-xs">For: <span className="text-body font-medium">{interest.listing?.name ?? '—'}</span></p>
-        </div>
-        <span className={`text-xs px-2 py-1 rounded-full border capitalize flex-shrink-0
-          ${interest.status === 'approved' ? 'bg-primary-50 text-primary-600 border-primary-200'
-          : interest.status === 'rejected' ? 'bg-[#F4EBE8] text-[#8C4238] border-[#E0C8C4]'
-          : 'bg-[#F5EDD9] text-[#7A5E2A] border-[#E3D0A8]'}`}>
-          {interest.status}
-        </span>
-      </div>
-      {interest.message && <p className="text-muted text-xs mb-3 line-clamp-2">{interest.message}</p>}
-      {interest.experience && <p className="text-subtle text-xs mb-3">🏅 {interest.experience}</p>}
-      {interest.status === 'pending' && (
-        <div className="flex gap-2">
-          <button onClick={() => onApprove(interest._id)}
-            className="flex-1 py-1.5 rounded-lg bg-primary-50 border border-green-500/30 text-primary-600 text-xs font-medium hover:bg-green-500/20 transition-all">
-            ✅ Approve
-          </button>
-          <button onClick={() => onReject(interest._id)}
-            className="flex-1 py-1.5 rounded-lg bg-[#F4EBE8] border border-red-500/30 text-[#8C4238] text-xs font-medium hover:bg-red-500/20 transition-all">
-            ❌ Reject
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ── Main Shelter Dashboard ────────────────────────────────────────────────────
 export default function ShelterDashboardPage() {
   const { user } = useAuth();
-  const [listings,   setListings]   = useState([]);
-  const [interests,  setInterests]  = useState([]);
-  const [loading,    setLoading]    = useState(true);
-  const [tab,        setTab]        = useState('listings');
-  const [showModal,  setShowModal]  = useState(false);
-  const [editing,    setEditing]    = useState(null);
-  const [isSaving,   setIsSaving]   = useState(false);
+  const navigate = useNavigate();
+  const [listings, setListings] = useState([]);
+  const [interests, setInterests] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const fetchAll = useCallback(async () => {
+  const fetchDashboardData = useCallback(async () => {
     setLoading(true);
     try {
       const [listRes, intRes] = await Promise.all([
         AdoptionService.getListings({ limit: 50 }),
         AdoptionService.getShelterInterests(),
       ]);
-      setListings(listRes.data.data);
-      setInterests(intRes.data.data);
-    } catch {}
-    finally { setLoading(false); }
+      setListings(listRes.data.data || []);
+      setInterests(intRes.data.data || []);
+    } catch {
+      setListings([]);
+      setInterests([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  useEffect(() => { fetchAll(); }, [fetchAll]);
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
 
-  const handleSave = async (form) => {
-    setIsSaving(true);
-    try {
-      if (editing?._id) await AdoptionService.updateListing(editing._id, form);
-      else              await AdoptionService.createListing(form);
-      await fetchAll();
-      setShowModal(false);
-      setEditing(null);
-    } catch {}
-    finally { setIsSaving(false); }
-  };
-
-  const handleRemoveListing = async (id) => {
-    if (!confirm('Remove this listing?')) return;
-    try { await AdoptionService.removeListing(id); await fetchAll(); } catch {}
-  };
-
-  const handleInterestAction = async (id, status) => {
-    try { await AdoptionService.updateInterest(id, { status }); await fetchAll(); } catch {}
-  };
-
-  const available = listings.filter(l => l.status === 'available').length;
-  const pending   = interests.filter(i => i.status === 'pending').length;
+  // Derived metrics
+  const availableListings = useMemo(() => listings.filter((l) => l.status === 'available'), [listings]);
+  const adoptedListings = useMemo(() => listings.filter((l) => l.status === 'adopted'), [listings]);
+  const pendingInterests = useMemo(() => interests.filter((i) => i.status === 'pending'), [interests]);
 
   return (
     <DashboardLayout pageTitle="Shelter Dashboard 🏠">
-      <div className="px-4 sm:px-6 py-8 max-w-5xl mx-auto">
+      <div className="px-4 sm:px-6 py-8 max-w-6xl mx-auto space-y-7">
 
-        {/* Header */}
-        <div className="mb-8">
-          <p className="text-muted text-sm">Shelter Portal</p>
-          <h2 className="text-3xl font-black text-body gradient-text">{user?.shelterName || user?.name}</h2>
+        {/* ── Shelter Welcome Banner ── */}
+        <div className="glass-card p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative overflow-hidden">
+          <div className="space-y-1 z-10">
+            <div className="flex items-center gap-2">
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-primary-100 text-primary-800 font-semibold border border-primary-300">
+                🏡 Verified Animal Rescue
+              </span>
+              {user?.shelterLicense && (
+                <span className="text-xs text-muted">· Reg #{user.shelterLicense}</span>
+              )}
+            </div>
+            <h1 className="text-3xl sm:text-4xl font-heading font-semibold text-strong">
+              Welcome back, <span className="heading-gradient">{user?.shelterName || user?.name}</span>
+            </h1>
+            <p className="text-muted text-sm max-w-xl">
+              Manage rescue profiles, evaluate adoption inquiries, and help animals find their forever families.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap sm:flex-nowrap gap-3 z-10">
+            <button
+              onClick={() => navigate('/shelter/listings')}
+              className="btn-primary text-xs sm:text-sm py-2.5 px-4 shadow-sm"
+            >
+              🐕 Manage Listings
+            </button>
+            <button
+              onClick={() => navigate('/shelter/interests')}
+              className="btn-outline text-xs sm:text-sm py-2.5 px-4"
+            >
+              📬 Adoption Inquiries ({pendingInterests.length})
+            </button>
+          </div>
+
+          <div className="absolute -right-6 -bottom-6 w-36 h-36 bg-primary-500/5 rounded-full pointer-events-none" />
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        {/* ── Key Shelter Metrics ── */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { icon: '🐕', label: 'Total Listings',    value: listings.length,  color: 'text-primary-400'  },
-            { icon: '✅', label: 'Available',          value: available,         color: 'text-primary-600'    },
-            { icon: '📬', label: 'Pending Requests',  value: pending,           color: 'text-[#7A5E2A]'   },
-          ].map((s) => (
-            <div key={s.label} className="glass-card p-4 text-center">
-              <span className="text-2xl">{s.icon}</span>
-              <p className={`text-3xl font-black mt-1 ${s.color}`}>{s.value}</p>
-              <p className="text-xs text-muted mt-0.5">{s.label}</p>
+            {
+              label: 'Total Listings',
+              val: listings.length,
+              icon: '🐕',
+              desc: 'Rescues on file',
+              color: 'text-primary-800',
+              bg: 'bg-primary-50',
+              onClick: () => navigate('/shelter/listings'),
+            },
+            {
+              label: 'Available Now',
+              val: availableListings.length,
+              icon: '✅',
+              desc: 'Ready for adoption',
+              color: 'text-primary-600',
+              bg: 'bg-white',
+              onClick: () => navigate('/shelter/listings'),
+            },
+            {
+              label: 'Pending Inquiries',
+              val: pendingInterests.length,
+              icon: '📬',
+              desc: 'Awaiting shelter review',
+              color: 'text-[#7A5E2A]',
+              bg: 'bg-[#FDF8EE]',
+              badge: pendingInterests.length > 0 ? 'Action Needed' : null,
+              onClick: () => navigate('/shelter/interests'),
+            },
+            {
+              label: 'Forever Homes',
+              val: adoptedListings.length,
+              icon: '🏡',
+              desc: 'Successfully adopted',
+              color: 'text-info-600',
+              bg: 'bg-white',
+              onClick: () => navigate('/shelter/listings'),
+            },
+          ].map((card) => (
+            <div
+              key={card.label}
+              onClick={card.onClick}
+              className={`glass-card p-5 cursor-pointer hover:-translate-y-0.5 transition-all flex flex-col justify-between ${card.bg}`}
+            >
+              <div className="flex items-start justify-between">
+                <span className="text-2xl">{card.icon}</span>
+                {card.badge && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#F5EDD9] text-[#7A5E2A] font-bold uppercase tracking-wider">
+                    {card.badge}
+                  </span>
+                )}
+              </div>
+              <div className="mt-3">
+                <p className={`text-3xl font-black ${card.color}`}>{card.val}</p>
+                <p className="text-xs font-semibold text-strong mt-0.5">{card.label}</p>
+                <p className="text-[11px] text-muted">{card.desc}</p>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Tab bar */}
-        <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-          <div className="flex gap-1 p-1 bg-primary-50 rounded-xl border border-[#E8E2D9]">
-            {[{ key:'listings', label:'My Listings', emoji:'🐕' }, { key:'interests', label:'Adoption Requests', emoji:'📬' }].map(({ key, label, emoji }) => (
-              <button key={key} onClick={() => setTab(key)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all
-                  ${tab === key
-                    ? 'bg-white border border-primary-300 text-primary-900 font-semibold shadow-sm'
-                    : 'text-muted hover:text-body hover:bg-white/50'
-                  }`}>
-                <span>{emoji}</span> {label}
-                {key === 'interests' && pending > 0 && (
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-bold ${tab === key ? 'bg-primary-100 text-primary-800' : 'bg-[#F5EDD9] text-[#7A5E2A]'}`}>{pending}</span>
-                )}
-              </button>
-            ))}
+        {/* ── Two Column Layout: Recent Applications & Available Spotlight ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+          {/* Left 2 Cols: Inquiries Queue */}
+          <div className="lg:col-span-2 space-y-6">
+
+            {/* Applications Queue */}
+            <div className="glass-card p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-base font-heading font-semibold text-strong flex items-center gap-2">
+                    <span>📬</span> Recent Adoption Inquiries
+                  </h3>
+                  <p className="text-xs text-muted">Prospective adopters waiting for your shelter's response</p>
+                </div>
+                <Link
+                  to="/shelter/interests"
+                  className="text-xs text-primary-700 hover:text-primary-900 font-semibold"
+                >
+                  View All Requests ({interests.length}) →
+                </Link>
+              </div>
+
+              {loading ? (
+                <div className="flex justify-center py-10">
+                  <div className="w-6 h-6 border-2 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" />
+                </div>
+              ) : interests.length === 0 ? (
+                <div className="p-8 text-center bg-white rounded-xl border border-[#E8E2D9]">
+                  <span className="text-3xl block mb-2">🎉</span>
+                  <p className="text-sm font-semibold text-strong">No adoption applications pending</p>
+                  <p className="text-xs text-muted mt-0.5">
+                    Your queue is clear. New inquiries from pet adopters will appear here.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {interests.slice(0, 4).map((item) => {
+                    const pet = item.listing || item.pet;
+                    const applicant = item.applicant || item.user;
+                    return (
+                      <div
+                        key={item._id}
+                        onClick={() => navigate('/shelter/interests')}
+                        className="p-3.5 bg-white rounded-xl border border-[#E8E2D9] flex items-center justify-between gap-4 hover:border-primary-400 cursor-pointer transition-colors"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center text-xl overflow-hidden flex-shrink-0 border border-[#E8E2D9]">
+                            {pet?.images?.[0] ? (
+                              <img src={pet.images[0]} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                              <span>{SPECIES_EMOJI[pet?.species] || '🐾'}</span>
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-semibold text-strong truncate">
+                              {applicant?.name || 'Applicant'} interested in{' '}
+                              <span className="text-primary-800 font-bold">{pet?.petName || pet?.name || 'Pet'}</span>
+                            </p>
+                            <p className="text-[11px] text-muted truncate mt-0.5">
+                              {applicant?.email} {applicant?.phone ? `· ${applicant.phone}` : ''}
+                            </p>
+                          </div>
+                        </div>
+
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span
+                          className={`text-[10px] px-2 py-0.5 rounded-full font-semibold capitalize border ${
+                            item.status === 'approved'
+                              ? 'bg-primary-50 text-primary-800 border-primary-300'
+                              : item.status === 'pending'
+                              ? 'bg-[#F5EDD9] text-[#7A5E2A] border-[#E3D0A8]'
+                              : 'bg-gray-50 text-muted border-gray-200'
+                          }`}
+                        >
+                          {item.status}
+                        </span>
+                        <span className="text-xs text-muted">→</span>
+                      </div>
+                    </div>
+                  );
+                })}
+                </div>
+              )}
+            </div>
+
+            {/* Available Animals Spotlight */}
+            <div className="glass-card p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-heading font-semibold text-strong flex items-center gap-2">
+                  <span>🐕</span> Featured Available Rescues
+                </h3>
+                <Link to="/shelter/listings" className="text-xs text-primary-700 hover:text-primary-900 font-semibold">
+                  All Listings ({listings.length}) →
+                </Link>
+              </div>
+
+              {availableListings.length === 0 ? (
+                <p className="text-xs text-muted italic bg-white p-4 rounded-xl border border-[#E8E2D9] text-center">
+                  No animals currently marked as available.
+                </p>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {availableListings.slice(0, 3).map((pet) => (
+                    <div
+                      key={pet._id}
+                      onClick={() => navigate('/shelter/listings')}
+                      className="bg-white rounded-xl border border-[#E8E2D9] overflow-hidden hover:shadow-xs cursor-pointer transition-shadow"
+                    >
+                      <div className="h-28 bg-primary-100 flex items-center justify-center overflow-hidden">
+                        {pet.images?.[0] ? (
+                          <img src={pet.images[0]} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-3xl">{SPECIES_EMOJI[pet.species] || '🐾'}</span>
+                        )}
+                      </div>
+                      <div className="p-2.5 text-center">
+                        <p className="font-bold text-xs text-strong truncate">{pet.petName || pet.name}</p>
+                        <p className="text-[11px] text-muted truncate">
+                          {pet.breed || pet.species} {pet.age ? `· ${pet.age}y` : ''}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
           </div>
-          {tab === 'listings' && (
-            <button onClick={() => { setEditing(null); setShowModal(true); }} id="add-listing-btn" className="btn-primary text-sm">
-              + Add Listing
-            </button>
-          )}
+
+          {/* Right 1 Col: Quick Shelter Shortcuts & Practice Info */}
+          <div className="space-y-6">
+
+            {/* Quick Practice Actions */}
+            <div className="glass-card p-5 space-y-3">
+              <h3 className="text-sm font-heading font-semibold text-strong">⚡ Shelter Shortcuts</h3>
+              <div className="space-y-2 text-xs">
+                <button
+                  onClick={() => navigate('/shelter/listings')}
+                  className="w-full text-left p-2.5 rounded-xl bg-white border border-[#E8E2D9] hover:bg-primary-50 transition-colors flex items-center justify-between font-medium text-body"
+                >
+                  <span>🐕 + Add New Rescue Listing</span>
+                  <span className="text-muted">→</span>
+                </button>
+                <button
+                  onClick={() => navigate('/shelter/interests')}
+                  className="w-full text-left p-2.5 rounded-xl bg-white border border-[#E8E2D9] hover:bg-primary-50 transition-colors flex items-center justify-between font-medium text-body"
+                >
+                  <span>📬 Review Pending Inquiries</span>
+                  <span className="text-muted">→</span>
+                </button>
+                <button
+                  onClick={() => navigate('/adopt')}
+                  className="w-full text-left p-2.5 rounded-xl bg-white border border-[#E8E2D9] hover:bg-primary-50 transition-colors flex items-center justify-between font-medium text-body"
+                >
+                  <span>🏠 View Public Adoption Feed</span>
+                  <span className="text-muted">→</span>
+                </button>
+                <button
+                  onClick={() => navigate('/profile')}
+                  className="w-full text-left p-2.5 rounded-xl bg-white border border-[#E8E2D9] hover:bg-primary-50 transition-colors flex items-center justify-between font-medium text-body"
+                >
+                  <span>⚙️ Shelter Profile & License</span>
+                  <span className="text-muted">→</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Shelter Notice Card */}
+            <div className="glass-card p-5 bg-primary-50/70 border border-primary-200">
+              <span className="text-2xl block mb-2">💡</span>
+              <h4 className="text-xs font-bold text-primary-900 mb-1">Adopter Verification Tips</h4>
+              <p className="text-[11px] text-muted leading-relaxed">
+                Always review the applicant's experience, verify if they rent or own their residence, and contact them via phone before approving final adoption releases.
+              </p>
+            </div>
+
+          </div>
+
         </div>
 
-        {/* Content */}
-        {loading ? (
-          <div className="flex justify-center py-16"><div className="w-8 h-8 border-2 border-primary-500/30 border-t-primary-500 rounded-full animate-spin" /></div>
-        ) : tab === 'listings' ? (
-          listings.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-5xl mb-4 opacity-30">🐕</p>
-              <p className="text-muted mb-4">No listings yet. Add your first pet for adoption.</p>
-              <button onClick={() => { setEditing(null); setShowModal(true); }} className="btn-primary text-sm">+ Add First Listing</button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {listings.map((l) => (
-                <div key={l._id} className="glass-card overflow-hidden group">
-                  <div className="h-36 bg-primary-100/70 flex items-center justify-center text-5xl relative overflow-hidden border-b border-[#E8E2D9]">
-                    {l.images?.[0] ? <img src={l.images[0]} alt={l.name} className="w-full h-full object-cover" /> : <span className="opacity-30">{SPECIES_EMOJI[l.species] ?? '🐾'}</span>}
-                    <div className="absolute top-2 right-2">
-                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full capitalize
-                        ${l.status === 'available' ? 'bg-primary-50 text-primary-700 border border-primary-200' : 'bg-[#EEEAE4] text-body'}`}>
-                        {l.status}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <p className="text-strong font-bold text-sm">{l.name}</p>
-                    <p className="text-muted text-xs capitalize mb-3">{l.species} · {l.breed || '—'} · {l.age || '—'}</p>
-                    <div className="flex gap-2">
-                      <button onClick={() => { setEditing(l); setShowModal(true); }}
-                        className="flex-1 text-xs py-1.5 rounded-lg border border-[#E8E2D9] text-muted hover:border-primary-500/40 hover:text-primary-400 transition-all">
-                        ✏️ Edit
-                      </button>
-                      <button onClick={() => handleRemoveListing(l._id)}
-                        className="flex-1 text-xs py-1.5 rounded-lg border border-[#E8E2D9] text-muted hover:border-red-500/40 hover:text-[#8C4238] transition-all">
-                        🗑️ Remove
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )
-        ) : (
-          interests.length === 0 ? (
-            <div className="text-center py-20">
-              <p className="text-5xl mb-4 opacity-30">📬</p>
-              <p className="text-muted">No adoption requests yet.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {interests.map((i) => (
-                <InterestCard key={i._id} interest={i}
-                  onApprove={(id) => handleInterestAction(id, 'approved')}
-                  onReject={(id)  => handleInterestAction(id, 'rejected')} />
-              ))}
-            </div>
-          )
-        )}
       </div>
-
-      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={editing ? 'Edit Listing' : 'Add New Listing 🐕'} size="lg">
-        <ListingForm initial={editing} onSave={handleSave} onCancel={() => setShowModal(false)} isSaving={isSaving} />
-      </Modal>
     </DashboardLayout>
   );
 }

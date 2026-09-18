@@ -5,6 +5,9 @@
 import api from './axios.js';
 
 const HealthRecordService = {
+  /** Fetch all records (vet or owner) */
+  getAll:        (params)      => api.get('/health-records', { params }),
+
   /** Fetch all records for a specific pet */
   getByPet:      (petId)       => api.get(`/health-records/pet/${petId}`),
 
